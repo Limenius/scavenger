@@ -1,25 +1,29 @@
 import * as PIXI from "pixi.js";
 import { astar, Graph } from "./astar";
+import { Map, compute } from "./fov";
 
 const map = `
 ********************
 *..................*
 *..................*
-*..................*
-*..................*
-*.................**
-*******************
+*........*.........*
+*........*.........*
+*........*........**
+********************
 `;
 
 const SET_APP = "SET_APP";
 const SET_TEXTURES = "SET_TEXTURES";
+const SET_TILES = "SET_TILES";
 const MOUSE_OVER = "MOUSE_OVER";
+const COMPUTE_FOV = "COMPUTE_FOV";
 const CLICK = "CLICK";
 
 const MAX_MOVE = 5;
 
 const initialState = {
   map,
+  tiles: null,
   player: { x: 3, y: 3, sprite: null },
   monsters: [{ x: 4, y: 5, sprite: null }, { x: 6, y: 1, sprite: null }],
   gold: [{ x: 1, y: 4, sprite: null }, { x: 8, y: 5, sprite: null }],
@@ -62,11 +66,14 @@ const reducer = (state = initialState, action) => {
       return { ...state, app: action.app };
     case SET_TEXTURES:
       return { ...state, textures: action.textures };
+    case SET_TILES:
+      return { ...state, tiles: action.tiles };
     case CLICK:
       const path = findPath(state.player, action.coords, state.map);
       if (path.length > 0 && path[path.length - 1].g <= MAX_MOVE) {
         state.player.sprite.position.x = action.coords.x * 50;
         state.player.sprite.position.y = action.coords.y * 50;
+        renderFov(state);
         return {
           ...state,
           player: { ...state.player, x: action.coords.x, y: action.coords.y }
@@ -92,10 +99,25 @@ const reducer = (state = initialState, action) => {
         const trajectory = renderTrajectory(state, action.coords);
         return { ...state, trajectory };
       }
+    case COMPUTE_FOV:
+      renderFov(state);
+      return state;
     default:
       return state;
   }
 };
+
+function renderFov(state) {
+  const grid = new Map(transformMapToGraph(state.map));
+  compute(grid, [state.player.x, state.player.y], 10);
+  console.log(grid.tiles)
+  grid.tiles.forEach((column, idxY) => {
+    column.forEach((tile, idxX) => {
+      console.log(state.tiles)
+      state.tiles[idxX][idxY].visible = tile.visible;
+    })
+  })
+}
 
 function renderTrajectory(state, end) {
   if (state.trajectory) {
@@ -110,6 +132,7 @@ function renderTrajectory(state, end) {
       state.app.stage.addChild(sprite);
       return sprite;
     }
+    return null;
   });
 }
 
@@ -138,6 +161,15 @@ export function mouseOver(coords) {
 
 export function click(coords) {
   return { type: CLICK, coords };
+}
+
+export function computeFOV(coords) {
+  return { type: COMPUTE_FOV, coords };
+}
+
+export function setTiles(tiles) {
+  console.log(tiles)
+  return { type: SET_TILES, tiles };
 }
 
 export default reducer;

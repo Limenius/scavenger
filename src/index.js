@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import { createStore } from "./store";
-import reducer, { setApp, setTextures, mouseOver, click } from "./reducer";
+import reducer, { setApp, setTextures, mouseOver, click, computeFOV } from "./reducer";
 import { getMousePos, getMapCoord } from "./util";
 import setupScene from "./renderScene"
 
@@ -28,7 +28,7 @@ function loadGraphics() {
 
 function initScene() {
   const store = createStore(reducer);
-  const app = new PIXI.Application(1000, 1000, {backgroundColor : 0x1099bb});
+  const app = new PIXI.Application(1000, 1000, {backgroundColor : 0x000000});
   document.getElementById("game").appendChild(app.view);
   setupUIEvents(store, app.view);
   return store.dispatch(setApp(app));
@@ -61,6 +61,7 @@ function onLoadResources(loader, resources, store) {
     return acc;
   }, {});
   setupScene(store.dispatch(setTextures(textures)));
+  store.dispatch(computeFOV());
 }
 
 start();

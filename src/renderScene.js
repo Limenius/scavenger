@@ -1,10 +1,11 @@
 import * as PIXI from "pixi.js";
+import { setTiles } from "./reducer";
 
 export default function render(store) {
   const scene = store.getState();
   const rows = scene.map.split("\n").filter(row => row !== "");
-  rows.forEach((row, idx) => {
-    row.split("").forEach((tileChar, column) => {
+  const tiles = rows.map((row, idx) => {
+    return row.split("").map((tileChar, column) => {
       let tile;
       switch (tileChar) {
         case ".":
@@ -19,8 +20,11 @@ export default function render(store) {
       tile.position.x = column * 50;
       tile.position.y = idx * 50;
       scene.app.stage.addChild(tile);
+      return tile;
     });
   });
+
+  store.dispatch(setTiles(tiles));
 
   const item = scene.player;
   item.sprite = new PIXI.Sprite(scene.textures.player);
