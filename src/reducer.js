@@ -27,6 +27,7 @@ const initialState = {
   textures: {},
   gameState: {},
   renderer: null,
+  trajectory: [],
   entities: {}
 };
 
@@ -62,15 +63,8 @@ const reducer = (state = initialState, action) => {
     case SET_TEXTURES:
       return { ...state, textures: action.textures };
     case CLICK:
-      const graph = new Graph(transformMapToGraph(state.map), {
-        diagonal: true
-      });
-      const start = graph.grid[state.player.x][state.player.y];
-      const end = graph.grid[action.coords.x][action.coords.y];
-      const result = astar.search(graph, start, end, {
-        heuristic: astar.heuristics.diagonal
-      });
-      if (result.length > 0 && result[result.length - 1].g <= MAX_MOVE) {
+      const path = findPath(state.player, action.coords, state.map);
+      if (path.length > 0 && path[path.length - 1].g <= MAX_MOVE) {
         state.player.sprite.position.x = action.coords.x * 50;
         state.player.sprite.position.y = action.coords.y * 50;
         return {
@@ -86,16 +80,49 @@ const reducer = (state = initialState, action) => {
         selectedTile.position.x = action.coords.x * 50;
         selectedTile.position.y = action.coords.y * 50;
         state.app.stage.addChild(selectedTile);
-        return { ...state, entities: { ...state.entities, selectedTile } };
+        const trajectory = renderTrajectory(state, action.coords);
+        return {
+          ...state,
+          trajectory,
+          entities: { ...state.entities, selectedTile }
+        };
       } else {
         state.entities.selectedTile.position.x = action.coords.x * 50;
         state.entities.selectedTile.position.y = action.coords.y * 50;
-        return state;
+        const trajectory = renderTrajectory(state, action.coords);
+        return { ...state, trajectory };
       }
     default:
       return state;
   }
 };
+
+function renderTrajectory(state, end) {
+  if (state.trajectory) {
+    state.trajectory.forEach(node => state.app.stage.removeChild(node));
+  }
+  const path = findPath(state.player, end, state.map);
+  return path.map(({ x, y, g }) => {
+    if (g <= MAX_MOVE) {
+      const sprite = new PIXI.Sprite(state.textures.selectedTile);
+      sprite.position.x = x * 50;
+      sprite.position.y = y * 50;
+      state.app.stage.addChild(sprite);
+      return sprite;
+    }
+  });
+}
+
+function findPath(start, end, map) {
+  const graph = new Graph(transformMapToGraph(map), {
+    diagonal: true
+  });
+  const startNode = graph.grid[start.x][start.y];
+  const endNode = graph.grid[end.x][end.y];
+  return astar.search(graph, startNode, endNode, {
+    heuristic: astar.heuristics.diagonal
+  });
+}
 
 export function setApp(app) {
   return { type: SET_APP, app };
