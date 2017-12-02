@@ -18,6 +18,10 @@ function initScene() {
   return {
     map: map,
     player: { x: 3, y: 3 },
+    monsters: [
+      {x: 4, y: 5},
+      {x: 6, y: 1},
+    ],
     sprites: {},
     textures: {},
     renderer,
@@ -31,6 +35,7 @@ function loadGraphics() {
       .add("tile", "./img/tile.png")
       .add("wall", "./img/wall.png")
       .add("player", "./img/player.png")
+      .add("monster", "./img/monster.png")
       .load((loader, resources) => {
         resolve({ loader, resources });
       });
@@ -45,7 +50,7 @@ function start() {
 }
 
 function onLoadResources(loader, resources, scene) {
-  const items = ["tile", "wall", "player"];
+  const items = ["tile", "wall", "player", "monster"];
   const textures = items.reduce((acc, name) => {
     acc[name] = new PIXI.Texture(
       resources[name].texture,
@@ -84,6 +89,13 @@ function render(scene) {
   player.position.x = scene.player.x * 50;
   player.position.y = scene.player.y * 50;
   scene.stage.addChild(player);
+
+  scene.monsters.forEach(({ x, y }) => {
+    const monster = new PIXI.Sprite(scene.textures.monster);
+    monster.position.x = x * 50;
+    monster.position.y = y * 50;
+    scene.stage.addChild(monster);
+  });
 
   scene.renderer.render(scene.stage);
   var result = "abc".repeat(2);
