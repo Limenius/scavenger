@@ -9,7 +9,29 @@ function initScene() {
     antialias: false
   });
   document.getElementById("game").appendChild(renderer.view);
+  setupUIEvents(renderer.view);
   return store.dispatch(setRenderer(renderer));
+}
+
+function setupUIEvents(element) {
+  element.addEventListener("mousemove", mouseMove);
+  //renderer.view.addEventListener('click', click);
+}
+
+function mouseMove(event) {
+  const mousePos = getMousePos(event);
+  const tile = getMapCoord(mousePos);
+  console.log(tile);
+}
+
+function getMapCoord({x, y}) {
+  return { x: Math.floor(x / 50), y: Math.floor(y / 50) };
+}
+
+function getMousePos(evt) {
+  var canvas = document.querySelector("canvas");
+  var rect = canvas.getBoundingClientRect();
+  return { x: evt.clientX - rect.left, y: evt.clientY - rect.top };
 }
 
 function loadGraphics() {
@@ -42,11 +64,11 @@ function onLoadResources(loader, resources, store) {
     );
     return acc;
   }, {});
-  render (store.dispatch(setTextures(textures)));
+  render(store.dispatch(setTextures(textures)));
 }
 
 function render(store) {
-  const scene = store.getState()
+  const scene = store.getState();
   const rows = scene.map.split("\n").filter(row => row !== "");
   rows.map((row, idx) => {
     row.split("").map((tileChar, column) => {
@@ -88,6 +110,5 @@ function render(store) {
   scene.renderer.render(scene.stage);
   var result = "abc".repeat(2);
 }
-
 
 start();
