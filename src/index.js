@@ -22,6 +22,10 @@ function initScene() {
       {x: 4, y: 5},
       {x: 6, y: 1},
     ],
+    gold: [
+      {x: 1, y: 4},
+      {x: 8, y: 5},
+    ],
     sprites: {},
     textures: {},
     renderer,
@@ -36,6 +40,7 @@ function loadGraphics() {
       .add("wall", "./img/wall.png")
       .add("player", "./img/player.png")
       .add("monster", "./img/monster.png")
+      .add("gold", "./img/gold.png")
       .load((loader, resources) => {
         resolve({ loader, resources });
       });
@@ -50,7 +55,7 @@ function start() {
 }
 
 function onLoadResources(loader, resources, scene) {
-  const items = ["tile", "wall", "player", "monster"];
+  const items = ["tile", "wall", "player", "monster", "gold"];
   const textures = items.reduce((acc, name) => {
     acc[name] = new PIXI.Texture(
       resources[name].texture,
@@ -67,7 +72,6 @@ function onLoadResources(loader, resources, scene) {
 function render(scene) {
   const rows = scene.map.split("\n").filter(row => row !== "");
   rows.map((row, idx) => {
-    console.log(row.split(""));
     row.split("").map((tileChar, column) => {
       let tile;
       switch (tileChar) {
@@ -90,6 +94,13 @@ function render(scene) {
   player.position.y = scene.player.y * 50;
   scene.stage.addChild(player);
 
+  scene.gold.forEach(({ x, y }) => {
+    const gold = new PIXI.Sprite(scene.textures.gold);
+    gold.position.x = x * 50;
+    gold.position.y = y * 50;
+    scene.stage.addChild(gold);
+  });
+
   scene.monsters.forEach(({ x, y }) => {
     const monster = new PIXI.Sprite(scene.textures.monster);
     monster.position.x = x * 50;
@@ -101,6 +112,5 @@ function render(scene) {
   var result = "abc".repeat(2);
 }
 
-console.log(map);
 
 start();
