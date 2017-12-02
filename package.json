@@ -1,0 +1,9 @@
+{
+  "name": "scavenger",
+  "version": "1.0.0",
+  "description": "A game about getting rich and not being detected",
+  "main": "src/index.js",
+  "author": "Victoria Quirante & Nacho Martin",
+  "license": "MIT",
+  "private": false
+}
