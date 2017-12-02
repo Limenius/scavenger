@@ -5,8 +5,8 @@ const map = `
 *..................*
 *..................*
 *..................*
-*..................*
-********************
+*.................**
+*******************
 `;
 
 function initScene() {
@@ -17,6 +17,7 @@ function initScene() {
   document.getElementById("game").appendChild(renderer.view);
   return {
     map: map,
+    player: { x: 3, y: 3 },
     sprites: {},
     textures: {},
     renderer,
@@ -29,6 +30,7 @@ function loadGraphics() {
     PIXI.loader
       .add("tile", "./img/tile.png")
       .add("wall", "./img/wall.png")
+      .add("player", "./img/player.png")
       .load((loader, resources) => {
         resolve({ loader, resources });
       });
@@ -43,10 +45,13 @@ function start() {
 }
 
 function onLoadResources(loader, resources, scene) {
-  const terrain = ['tile', 'wall'];
-  const textures = terrain.reduce((acc, name) => {
-    acc[name] = new PIXI.Texture(resources[name].texture, new PIXI.Rectangle(0, 0, 50, 50))
-    return acc
+  const items = ["tile", "wall", "player"];
+  const textures = items.reduce((acc, name) => {
+    acc[name] = new PIXI.Texture(
+      resources[name].texture,
+      new PIXI.Rectangle(0, 0, 50, 50)
+    );
+    return acc;
   }, {});
   render({
     ...scene,
@@ -55,7 +60,7 @@ function onLoadResources(loader, resources, scene) {
 }
 
 function render(scene) {
-  const rows = scene.map.split("\n").filter(row => row !== '');
+  const rows = scene.map.split("\n").filter(row => row !== "");
   rows.map((row, idx) => {
     console.log(row.split(""));
     row.split("").map((tileChar, column) => {
@@ -75,6 +80,11 @@ function render(scene) {
       scene.stage.addChild(tile);
     });
   });
+  const player = new PIXI.Sprite(scene.textures.player);
+  player.position.x = scene.player.x * 50;
+  player.position.y = scene.player.y * 50;
+  scene.stage.addChild(player);
+
   scene.renderer.render(scene.stage);
   var result = "abc".repeat(2);
 }
