@@ -1,6 +1,7 @@
 const path = require("path");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 var config = {
   entry: "./src/index.js",
@@ -8,13 +9,18 @@ var config = {
     filename: "bundle.js",
     path: path.resolve(__dirname, "./public")
   },
+  devtool: "cheap-module-eval-source-map",
   devServer: {
     contentBase: "./dist"
   },
   plugins: [
+    new CopyWebpackPlugin([
+      { from: 'assets/', to: 'img/' },
+    ]),
     new CleanWebpackPlugin(["public"]),
     new HtmlWebpackPlugin({
-      title: "Scavenger"
+      title: "Scavenger",
+      template: "index.html"
     })
   ],
   module: {
