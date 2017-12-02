@@ -1,36 +1,15 @@
 import * as PIXI from "pixi.js";
-const map = `
-********************
-*..................*
-*..................*
-*..................*
-*..................*
-*.................**
-*******************
-`;
+import { createStore } from "./store";
+import reducer, { setRenderer, setTextures } from "./reducer";
 
 function initScene() {
+  const store = createStore(reducer);
   const renderer = PIXI.autoDetectRenderer(1000, 1000, null, {
     noWebGl: true,
     antialias: false
   });
   document.getElementById("game").appendChild(renderer.view);
-  return {
-    map: map,
-    player: { x: 3, y: 3 },
-    monsters: [
-      {x: 4, y: 5},
-      {x: 6, y: 1},
-    ],
-    gold: [
-      {x: 1, y: 4},
-      {x: 8, y: 5},
-    ],
-    sprites: {},
-    textures: {},
-    renderer,
-    stage: new PIXI.Container()
-  };
+  return store.dispatch(setRenderer(renderer));
 }
 
 function loadGraphics() {
@@ -48,13 +27,13 @@ function loadGraphics() {
 }
 
 function start() {
-  const scene = initScene();
+  const store = initScene();
   Promise.all([loadGraphics()]).then(([{ loader, resources }]) => {
-    onLoadResources(loader, resources, scene);
+    onLoadResources(loader, resources, store);
   });
 }
 
-function onLoadResources(loader, resources, scene) {
+function onLoadResources(loader, resources, store) {
   const items = ["tile", "wall", "player", "monster", "gold"];
   const textures = items.reduce((acc, name) => {
     acc[name] = new PIXI.Texture(
@@ -63,13 +42,11 @@ function onLoadResources(loader, resources, scene) {
     );
     return acc;
   }, {});
-  render({
-    ...scene,
-    textures
-  });
+  render (store.dispatch(setTextures(textures)));
 }
 
-function render(scene) {
+function render(store) {
+  const scene = store.getState()
   const rows = scene.map.split("\n").filter(row => row !== "");
   rows.map((row, idx) => {
     row.split("").map((tileChar, column) => {
