@@ -65,7 +65,7 @@ const reducer = (state = initialState, action) => {
       if (path.length > 0 && path[path.length - 1].g <= MAX_MOVE) {
         state.player.sprite.position.x = action.coords.x * 50;
         state.player.sprite.position.y = action.coords.y * 50;
-        renderFov(state);
+        renderFov(state, action.coords);
         const smell = renderSmell(state, action.coords);
         return {
           ...state,
@@ -94,7 +94,7 @@ const reducer = (state = initialState, action) => {
         return { ...state, trajectory };
       }
     case COMPUTE_FOV:
-      renderFov(state);
+      renderFov(state, state.player);
       const smell = renderSmell(state, state.player);
       return {...state, smell};
     default:
@@ -102,12 +102,22 @@ const reducer = (state = initialState, action) => {
   }
 };
 
-function renderFov(state) {
+function renderFov(state, center) {
   const grid = new Map(transformMapToGraph(state.map));
-  compute(grid, [state.player.x, state.player.y], 10);
+  compute(grid, [center.x, center.y], 10);
   grid.tiles.forEach((column, idxY) => {
     column.forEach((tile, idxX) => {
       state.tiles[idxX][idxY].visible = tile.visible;
+      state.monsters.forEach(monster => {
+        if (monster.x === idxX && monster.y === idxY) {
+          monster.sprite.visible = tile.visible;
+        }
+      })
+      state.gold.forEach(gold => {
+        if (gold.x === idxX && gold.y === idxY) {
+          gold.sprite.visible = tile.visible;
+        }
+      })
     });
   });
 }
