@@ -13,12 +13,13 @@ const map = `
 const SET_APP = "SET_APP";
 const SET_TEXTURES = "SET_TEXTURES";
 const MOUSE_OVER = "MOUSE_OVER";
+const CLICK = "CLICK";
 
 const initialState = {
   map,
-  player: { x: 3, y: 3 },
-  monsters: [{ x: 4, y: 5 }, { x: 6, y: 1 }],
-  gold: [{ x: 1, y: 4 }, { x: 8, y: 5 }],
+  player: { x: 3, y: 3, sprite: null },
+  monsters: [{ x: 4, y: 5, sprite: null }, { x: 6, y: 1, sprite: null }],
+  gold: [{ x: 1, y: 4, sprite: null }, { x: 8, y: 5, sprite:null }],
   sprites: {},
   textures: {},
   gameState: {},
@@ -32,6 +33,10 @@ const reducer = (state = initialState, action) => {
       return { ...state, app: action.app };
     case SET_TEXTURES:
       return { ...state, textures: action.textures };
+    case CLICK:
+      state.player.sprite.position.x = action.coords.x * 50;
+      state.player.sprite.position.y = action.coords.y * 50;
+      return state;
     case MOUSE_OVER:
       if (!state.entities.selectedTile) {
         const selectedTile = new PIXI.Sprite(state.textures.selectedTile);
@@ -59,6 +64,10 @@ export function setTextures(textures) {
 
 export function mouseOver(coords) {
   return { type: MOUSE_OVER, coords };
+}
+
+export function click(coords) {
+  return { type: CLICK, coords };
 }
 
 export default reducer;

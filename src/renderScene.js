@@ -22,23 +22,23 @@ export default function render(store) {
     });
   });
 
-  const player = new PIXI.Sprite(scene.textures.player);
-  player.position.x = scene.player.x * 50;
-  player.position.y = scene.player.y * 50;
-  scene.app.stage.addChild(player);
+  const item = scene.player;
+  item.sprite = new PIXI.Sprite(scene.textures.player);
+  item.sprite.position.x = item.x * 50;
+  item.sprite.position.y = item.y * 50;
+  scene.app.stage.addChild(item.sprite);
 
-  scene.gold.forEach(({ x, y }) => {
-    const gold = new PIXI.Sprite(scene.textures.gold);
-    gold.position.x = x * 50;
-    gold.position.y = y * 50;
-    scene.app.stage.addChild(gold);
+  scene.gold.forEach(item => {
+    item.sprite = new PIXI.Sprite(scene.textures.gold);
+    item.sprite.position.x = item.x * 50;
+    item.sprite.position.y = item.y * 50;
+    scene.app.stage.addChild(item.sprite);
   });
 
-  scene.monsters.forEach(({ x, y }) => {
-    const monster = new PIXI.Sprite(scene.textures.monster);
-    monster.position.x = x * 50;
-    monster.position.y = y * 50;
-    scene.app.stage.addChild(monster);
+  scene.monsters.forEach(item => {
+    item.sprite = new PIXI.Sprite(scene.textures.monster);
+    item.sprite.position.x = item.x * 50;
+    item.sprite.position.y = item.y * 50;
+    scene.app.stage.addChild(item.sprite);
   });
-
 }

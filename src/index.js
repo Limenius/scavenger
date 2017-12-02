@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import { createStore } from "./store";
-import reducer, { setApp, setTextures, mouseOver } from "./reducer";
+import reducer, { setApp, setTextures, mouseOver, click } from "./reducer";
 import { getMousePos, getMapCoord } from "./util";
 import setupScene from "./renderScene"
 
@@ -36,13 +36,19 @@ function initScene() {
 
 function setupUIEvents(store, element) {
   element.addEventListener("mousemove", (event) => mouseMove(event, store));
-  //renderer.view.addEventListener('click', click);
+  element.addEventListener("click", (event) => mouseClick(event, store));
 }
 
 function mouseMove(event, store) {
   const mousePos = getMousePos(event);
   const tile = getMapCoord(mousePos);
   store.dispatch(mouseOver(tile));
+}
+
+function mouseClick(event, store) {
+  const mousePos = getMousePos(event);
+  const tile = getMapCoord(mousePos);
+  store.dispatch(click(tile));
 }
 
 function onLoadResources(loader, resources, store) {
