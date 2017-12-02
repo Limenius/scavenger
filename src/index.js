@@ -20,6 +20,7 @@ function loadGraphics() {
       .add("monster", "./img/monster.png")
       .add("gold", "./img/gold.png")
       .add("selectedTile", "./img/selectedTile.png")
+      .add("smell", "./img/smell.png")
       .load((loader, resources) => {
         resolve({ loader, resources });
       });
@@ -52,7 +53,7 @@ function mouseClick(event, store) {
 }
 
 function onLoadResources(loader, resources, store) {
-  const items = ["tile", "wall", "player", "monster", "gold", "selectedTile"];
+  const items = ["tile", "wall", "player", "monster", "gold", "selectedTile", "smell"];
   const textures = items.reduce((acc, name) => {
     acc[name] = new PIXI.Texture(
       resources[name].texture,

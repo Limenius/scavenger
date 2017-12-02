@@ -8,6 +8,21 @@ const map = `
 *..................*
 *........*.........*
 *........*.........*
+*..................*
+*........*.........*
+*........*.........*
+*..................*
+*........*.........*
+*........*.........*
+*..................*
+*........*.........*
+*........*.........*
+*..................*
+*........*.........*
+*........*.........*
+*..................*
+*........*.........*
+*........*.........*
 *........*........**
 ********************
 `;
@@ -23,6 +38,7 @@ const MAX_MOVE = 5;
 
 const initialState = {
   map,
+  smellRadius: 3,
   tiles: null,
   player: { x: 3, y: 3, sprite: null },
   monsters: [{ x: 4, y: 5, sprite: null }, { x: 6, y: 1, sprite: null }],
@@ -32,32 +48,8 @@ const initialState = {
   gameState: {},
   renderer: null,
   trajectory: [],
-  entities: {}
-};
-
-function transpose(a) {
-  return Object.keys(a[0]).map(function(c) {
-    return a.map(function(r) {
-      return r[c];
-    });
-  });
-}
-
-const transformMapToGraph = map => {
-  const rows = map.split("\n").filter(row => row !== "");
-  const grid = rows.map((row, idx) => {
-    return row.split("").map((tileChar, column) => {
-      switch (tileChar) {
-        case ".":
-          return 1;
-        case "*":
-          return 0;
-        default:
-          throw new Error(`Unrecognized tile char ${tileChar}`);
-      }
-    });
-  });
-  return transpose(grid);
+  entities: {},
+  smell: []
 };
 
 const reducer = (state = initialState, action) => {
@@ -74,9 +66,11 @@ const reducer = (state = initialState, action) => {
         state.player.sprite.position.x = action.coords.x * 50;
         state.player.sprite.position.y = action.coords.y * 50;
         renderFov(state);
+        const smell = renderSmell(state, action.coords);
         return {
           ...state,
-          player: { ...state.player, x: action.coords.x, y: action.coords.y }
+          player: { ...state.player, x: action.coords.x, y: action.coords.y },
+          smell
         };
       } else {
         return state;
@@ -101,7 +95,8 @@ const reducer = (state = initialState, action) => {
       }
     case COMPUTE_FOV:
       renderFov(state);
-      return state;
+      const smell = renderSmell(state, state.player);
+      return {...state, smell};
     default:
       return state;
   }
@@ -110,14 +105,75 @@ const reducer = (state = initialState, action) => {
 function renderFov(state) {
   const grid = new Map(transformMapToGraph(state.map));
   compute(grid, [state.player.x, state.player.y], 10);
-  console.log(grid.tiles)
   grid.tiles.forEach((column, idxY) => {
     column.forEach((tile, idxX) => {
-      console.log(state.tiles)
       state.tiles[idxX][idxY].visible = tile.visible;
-    })
-  })
+    });
+  });
 }
+
+function renderSmell(state, center) {
+  const grid = new Map(getBlankMap(state.map));
+
+  if (state.smell) {
+    state.smell.forEach(sprite => state.app.stage.removeChild(sprite));
+  }
+
+  compute(grid, [center.x, center.y], state.smellRadius);
+  const sprites = grid.tiles.map((column, idxY) => {
+    return column.map((tile, idxX) => {
+      if (tile.visible) {
+        const sprite = new PIXI.Sprite(state.textures.smell);
+        sprite.position.x = idxY * 50;
+        sprite.position.y = idxX * 50;
+        state.app.stage.addChild(sprite);
+        return sprite;
+      }
+      return null;
+    });
+  });
+  return flatten(sprites);
+}
+
+
+const flatten = list => list.reduce(
+  (a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []
+);
+
+function transpose(a) {
+  return Object.keys(a[0]).map(function(c) {
+    return a.map(function(r) {
+      return r[c];
+    });
+  });
+}
+
+const getBlankMap = map => {
+  const rows = map.split("\n").filter(row => row !== "");
+  const grid = rows.map((row, idx) => {
+    return row.split("").map((tileChar, column) => {
+      return 1;
+    });
+  });
+  return transpose(grid);
+};
+
+const transformMapToGraph = map => {
+  const rows = map.split("\n").filter(row => row !== "");
+  const grid = rows.map((row, idx) => {
+    return row.split("").map((tileChar, column) => {
+      switch (tileChar) {
+        case ".":
+          return 1;
+        case "*":
+          return 0;
+        default:
+          throw new Error(`Unrecognized tile char ${tileChar}`);
+      }
+    });
+  });
+  return transpose(grid);
+};
 
 function renderTrajectory(state, end) {
   if (state.trajectory) {
@@ -168,7 +224,6 @@ export function computeFOV(coords) {
 }
 
 export function setTiles(tiles) {
-  console.log(tiles)
   return { type: SET_TILES, tiles };
 }
 
