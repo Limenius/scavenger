@@ -2,9 +2,10 @@ import * as PIXI from "pixi.js";
 import { astar, Graph } from "./astar";
 import { Map, compute } from "./fov";
 import initLevel from "./initLevel";
+import { createTranslator } from "./translator";
 
 const MAX_MOVE = 6;
-const MONSTER_SPEED = 2;
+const MONSTER_MAX_MOVE = 2;
 
 const SET_APP = "SET_APP";
 const SET_MAP_CONTAINER = "SET_MAP_CONTAINER";
@@ -29,8 +30,10 @@ const SET_LEVEL = "SET_LEVEL";
 const SET_KILLED = "SET_KILLED";
 const SET_SIDEBAR = "SET_SIDEBAR";
 const SET_COLLECTED = "SET_COLLECTED";
+const SET_SCROLL = "SET_SCROLL";
 
 const initialState = {
+  scroll: {x: 0, y: 0},
   sidebar: { gold: null, chests: null},
   map: null,
   smellRadius: 0,
@@ -88,6 +91,8 @@ const reducer = (state = initialState, action) => {
       return { ...state, monsters: action.monsters };
     case SET_GOLD:
       return { ...state, gold: action.gold };
+    case SET_SCROLL:
+      return { ...state, scroll: { x: action.x, y: action.y } };
     case SET_TOTAL_CHESTS:
       return { ...state, totalChests: action.totalChests };
     case SET_TOTAL_GOLD:
@@ -201,12 +206,12 @@ function moveMonsters(state) {
 
 const moveToPlayer = (monster, state) => {
   const path = findPath(monster, state.player, state.map);
-  if (MONSTER_SPEED < path.length) {
+  if (MONSTER_MAX_MOVE < path.length) {
       state.sound.play('bad');
   } else {
       state.sound.play('gameover');
   }
-  const realPath = path.slice(0, MONSTER_SPEED);
+  const realPath = path.slice(0, MONSTER_MAX_MOVE);
   const lastNode = realPath[realPath.length - 1];
   monster.sprite.position.x = lastNode.x * 50;
   monster.sprite.position.y = lastNode.y * 50;
@@ -408,8 +413,6 @@ export function click(coords) {
     }
     const path = findPath(state.player, coords, state.map);
     if (path.length > 0 && path[path.length - 1].g <= MAX_MOVE) {
-      state.player.sprite.position.x = coords.x * 50;
-      state.player.sprite.position.y = coords.y * 50;
       const newState = {
         ...state,
         player: { ...state.player, x: coords.x, y: coords.y }
@@ -420,10 +423,15 @@ export function click(coords) {
         st.sound.play("lvlup");
         return dispatch(killed());
       }
-        //st.sound.play("blub");
       const st2 = pickGold(st);
+
+      const animator = createTranslator(path, state.player.sprite, state.app.ticker)
+      state.app.ticker.add(animator());
+
       // can do this one because it is only side effects.
-      dispatch(setCollected({chests: st2.collectedChests, gold: st2.collectedGold}));
+      dispatch(
+        setCollected({ chests: st2.collectedChests, gold: st2.collectedGold })
+      );
       renderFov(st2, coords);
       const smell = renderSmell(st2, coords);
       const hasFinished = exitLevel(st2);
@@ -489,24 +497,28 @@ export function removeTextBlock() {
   return { type: REMOVE_TEXT_BLOCK };
 }
 
+export function setScroll({ x, y }) {
+  return { type: SET_SCROLL, x, y };
+}
+
 export function setSidebar(sidebar) {
   return { type: SET_SIDEBAR, sidebar };
 }
 
-export function setCollected({gold, chests}) {
+export function setCollected({ gold, chests }) {
   return (dispatch, state) => {
     dispatch({ type: SET_COLLECTED, gold, chests });
-    dispatch(setSidebarValues({gold, chests}));
+    dispatch(setSidebarValues({ gold, chests }));
   };
 }
 
-export function setSidebarValues({chests, gold}) {
+export function setSidebarValues({ chests, gold }) {
   return (dispatch, state) => {
     const totalGold = state.totalGold;
     const totalChests = state.totalChests;
     state.sidebar.chests.text = `${chests}/${totalChests}`;
     state.sidebar.gold.text = `${gold}/${totalGold}`;
-  }
+  };
 }
 
 export function setTextBlock(text) {
