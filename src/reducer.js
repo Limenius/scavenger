@@ -6,7 +6,6 @@ import initLevel from "./initLevel";
 const MAX_MOVE = 6;
 const MONSTER_SPEED = 2;
 
-
 const SET_APP = "SET_APP";
 const SET_SMELL_RADIUS = "SET_SMELL_RADIUS";
 const SET_TEXT_BLOCK = "SET_TEXT_BLOCK";
@@ -16,7 +15,6 @@ const SET_TEXTURES = "SET_TEXTURES";
 const SET_TILES = "SET_TILES";
 const MOUSE_OVER = "MOUSE_OVER";
 const COMPUTE_FOV = "COMPUTE_FOV";
-const CLICK = "CLICK";
 const SET_STATE = "SET_STATE";
 const SET_PLAYER = "SET_PLAYER";
 const SET_GOLD = "SET_GOLD";
@@ -51,9 +49,9 @@ const reducer = (state = initialState, action) => {
     case SET_STATE:
       return action.state;
     case SET_MAP:
-      return {...state, map: action.map};
+      return { ...state, map: action.map };
     case SET_LEVEL:
-      return {...state, level: action.level};
+      return { ...state, level: action.level };
     case SET_APP:
       return { ...state, app: action.app };
     case SET_SOUND:
@@ -75,11 +73,13 @@ const reducer = (state = initialState, action) => {
       return { ...state, exits: action.exits };
     case SET_TEXT_BLOCK:
       state.app.stage.addChild(action.rectangle);
-      return { ...state, textBlock: { text: action.sprite, rectangle: action.rectangle } };
+      return {
+        ...state,
+        textBlock: { text: action.sprite, rectangle: action.rectangle }
+      };
     case REMOVE_TEXT_BLOCK:
       state.app.stage.removeChild(state.textBlock.rectangle);
       return state;
-    case CLICK:
     case MOUSE_OVER:
       if (state.textBlock || !state.map) {
         return state;
@@ -90,7 +90,11 @@ const reducer = (state = initialState, action) => {
         selectedTile.position.y = action.coords.y * 50;
         state.app.stage.addChild(selectedTile);
         const trajectory = renderTrajectory(state, action.coords);
-        return { ...state, trajectory, entities: { ...state.entities, selectedTile } };
+        return {
+          ...state,
+          trajectory,
+          entities: { ...state.entities, selectedTile }
+        };
       } else {
         state.entities.selectedTile.position.x = action.coords.x * 50;
         state.entities.selectedTile.position.y = action.coords.y * 50;
@@ -118,19 +122,21 @@ const exitLevel = state => {
     }
   });
   return hasFinished;
-}
+};
 
 const pickGold = state => {
-  const index = state.gold.findIndex(
-    ({ x, y }) => { 
-      return x === state.player.x && y === state.player.y
-    }
-  );
+  const index = state.gold.findIndex(({ x, y }) => {
+    return x === state.player.x && y === state.player.y;
+  });
 
   if (index !== -1) {
     let gold = state.gold.slice(index + 1).concat(state.gold.slice(0, index));
     state.app.stage.removeChild(state.gold[index].sprite);
-    return { ...state, gold, smellRadius: state.smellRadius + state.gold[index].value };
+    return {
+      ...state,
+      gold,
+      smellRadius: state.smellRadius + state.gold[index].value
+    };
   } else {
     return state;
   }
@@ -158,7 +164,6 @@ const inSmell = (monster, { smell }) =>
 function moveMonsters(state) {
   const monsters = state.monsters.map(monster => {
     if (inSmell(monster, state)) {
-      state.sound.play("lvlup");
       return moveToPlayer(monster, state);
     } else {
       return moveRandomly(monster, state);
@@ -321,15 +326,15 @@ export function goNextLevel() {
       level = state.level + 1;
     }
     return dispatch(initLevel(level));
-  }
+  };
 }
 
 const cleanMap = () => (dispatch, state) => {
   state.app.stage.removeChild(state.player.sprite);
-  state.monsters.forEach(({sprite}) => state.app.stage.removeChild(sprite))
-  state.gold.forEach(({sprite}) => state.app.stage.removeChild(sprite))
-  state.exits.forEach(({sprite}) => state.app.stage.removeChild(sprite))
-}
+  state.monsters.forEach(({ sprite }) => state.app.stage.removeChild(sprite));
+  state.gold.forEach(({ sprite }) => state.app.stage.removeChild(sprite));
+  state.exits.forEach(({ sprite }) => state.app.stage.removeChild(sprite));
+};
 
 export function click(coords) {
   return (dispatch, state) => {
@@ -341,9 +346,16 @@ export function click(coords) {
     if (path.length > 0 && path[path.length - 1].g <= MAX_MOVE) {
       state.player.sprite.position.x = coords.x * 50;
       state.player.sprite.position.y = coords.y * 50;
-      const newState = { ...state, player: { ...state.player, x: coords.x, y: coords.y } };
+      const newState = {
+        ...state,
+        player: { ...state.player, x: coords.x, y: coords.y }
+      };
       renderFov(newState, coords);
       const st = moveMonsters(newState);
+      if (monstersKillPlayer(st)) {
+        st.sound.play("lvlup");
+        return dispatch(endGame());
+      }
       st.sound.play("blub");
       const st2 = pickGold(st);
       renderFov(st2, coords);
@@ -359,6 +371,9 @@ export function click(coords) {
     }
   };
 }
+
+const monstersKillPlayer = ({ monsters, player }) =>
+  !!monsters.find(({ x, y }) => x === player.x && y === player.y);
 
 export function setState(state) {
   return { type: SET_STATE, state };
