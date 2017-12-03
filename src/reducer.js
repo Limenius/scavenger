@@ -65,13 +65,14 @@ const reducer = (state = initialState, action) => {
       if (path.length > 0 && path[path.length - 1].g <= MAX_MOVE) {
         state.player.sprite.position.x = action.coords.x * 50;
         state.player.sprite.position.y = action.coords.y * 50;
-        renderFov(state, action.coords);
         const smell = renderSmell(state, action.coords);
-        return {
+        const newState = {
           ...state,
           player: { ...state.player, x: action.coords.x, y: action.coords.y },
           smell
         };
+        renderFov(newState, action.coords);
+        return newState;
       } else {
         return state;
       }
@@ -109,12 +110,12 @@ function renderFov(state, center) {
     column.forEach((tile, idxX) => {
       state.tiles[idxX][idxY].visible = tile.visible;
       state.monsters.forEach(monster => {
-        if (monster.x === idxX && monster.y === idxY) {
+        if (monster.y === idxX && monster.x === idxY) {
           monster.sprite.visible = tile.visible;
         }
       })
       state.gold.forEach(gold => {
-        if (gold.x === idxX && gold.y === idxY) {
+        if (gold.y === idxX && gold.x === idxY) {
           gold.sprite.visible = tile.visible;
         }
       })
