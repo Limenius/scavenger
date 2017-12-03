@@ -145,6 +145,7 @@ const inSmell = (monster, { smell }) =>
 function moveMonsters(state) {
   const monsters = state.monsters.map(monster => {
     if (inSmell(monster, state)) {
+      state.sound.play('lvlup');
       return moveToPlayer(monster, state);
     } else {
       return moveRandomly(monster, state);

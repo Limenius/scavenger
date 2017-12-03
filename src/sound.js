@@ -15,7 +15,7 @@ export default class Sound {
         }),
         lvlup: new Howl({
           src: ["./sounds/lvlup.wav"],
-          loop: true,
+          loop: false,
           volume: 1,
           onload: function() {
             resolve();
