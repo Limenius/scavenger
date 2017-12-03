@@ -1,6 +1,6 @@
 const SPEED = 4;
 
-export function createTranslator(path, sprite, ticker) {
+export function createTranslator(path, sprite, ticker, done) {
   const trajectory = [
     { x: sprite.position.x / 50, y: sprite.position.y / 50 },
     ...path
@@ -9,6 +9,7 @@ export function createTranslator(path, sprite, ticker) {
   const step = function(delta) {
     if (it.next(delta).done) {
       ticker.remove(step);
+      done();
     }
   };
   return step;

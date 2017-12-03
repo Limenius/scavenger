@@ -32,8 +32,11 @@ const SET_KILLED = "SET_KILLED";
 const SET_SIDEBAR = "SET_SIDEBAR";
 const SET_COLLECTED = "SET_COLLECTED";
 const SET_SCROLL = "SET_SCROLL";
+const DISABLE_UI = "DISABLE_UI";
+const ENABLE_UI = "ENABLE_UI";
 
 const initialState = {
+  uiEnabled: true,
   scroll: {x: 0, y: 0},
   sidebar: { gold: null, chests: null},
   map: null,
@@ -64,6 +67,10 @@ const reducer = (state = initialState, action) => {
   switch (action.type) {
     case SET_STATE:
       return action.state;
+    case DISABLE_UI:
+      return { ...state, uiEnabled: false };
+    case ENABLE_UI:
+      return { ...state, uiEnabled: true };
     case SET_MAP:
       return { ...state, map: action.map };
     case SET_SIDEBAR_CONTAINER:
@@ -404,6 +411,9 @@ const cleanMap = () => (dispatch, state) => {
 // shameful
 export function click(coords) {
   return (dispatch, state) => {
+    if (!state.uiEnabled) {
+      return;
+    }
     if (state.killed) {
       state.mapContainer.removeChild(state.textBlock.rectangle);
       dispatch(removeTextBlock());
@@ -427,8 +437,11 @@ export function click(coords) {
       }
       const st2 = pickGold(st);
 
-      const animator = createTranslator(path, state.player.sprite, state.app.ticker)
-      state.app.ticker.add(animator);
+      const movement = new Promise(resolve => {
+        dispatch(disableUI());
+        const animator = createTranslator(path, state.player.sprite, state.app.ticker, resolve);
+        state.app.ticker.add(animator);
+      }).then(() => dispatch(enableUI()));
 
       // can do this one because it is only side effects.
       dispatch(
@@ -505,6 +518,14 @@ export function setScroll({ x, y }) {
 
 export function setSidebar(sidebar) {
   return { type: SET_SIDEBAR, sidebar };
+}
+
+export function disableUI() {
+  return { type: DISABLE_UI };
+}
+
+export function enableUI() {
+  return { type: ENABLE_UI };
 }
 
 export function setCollected({ gold, chests }) {
