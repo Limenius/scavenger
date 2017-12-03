@@ -311,7 +311,7 @@ function findPath(start, end, map) {
 }
 
 export function setApp(app) {
-  return { type: SET_APP, app };
+  return dispatch => dispatch({ type: SET_APP, app });
 }
 
 export function setSound(sound) {
