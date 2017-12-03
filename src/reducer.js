@@ -2,6 +2,9 @@ import * as PIXI from "pixi.js";
 import { astar, Graph } from "./astar";
 import { Map, compute } from "./fov";
 
+const MAX_MOVE = 6;
+const MONSTER_SPEED = 2;
+
 const mapChar = `
 ********************
 *..................*
@@ -44,8 +47,6 @@ const SET_TILES = "SET_TILES";
 const MOUSE_OVER = "MOUSE_OVER";
 const COMPUTE_FOV = "COMPUTE_FOV";
 const CLICK = "CLICK";
-
-const MAX_MOVE = 5;
 
 const initialState = {
   map,
@@ -117,24 +118,44 @@ const reducer = (state = initialState, action) => {
   }
 };
 
+const moveRandomly = (monster, state) => {
+  const findNewTile = (monster, map) => {
+    const newX = Math.floor(Math.random() * 3 - 1 + monster.x);
+    const newY = Math.floor(Math.random() * 3 - 1 + monster.y);
+    if (map[newX][newY] === ".") {
+      return { x: newX, y: newY };
+    } else {
+      return findNewTile(monster, map);
+    }
+  };
+  const newCoords = findNewTile(monster, state.map);
+  monster.sprite.position.x = newCoords.x * 50;
+  monster.sprite.position.y = newCoords.y * 50;
+  return { ...monster, x: newCoords.x, y: newCoords.y };
+};
+
+const inSmell = (monster, { smell }) =>
+  smell.find(({ x, y }) => monster.x === x && monster.y === y);
+
 function moveMonsters(state) {
   const monsters = state.monsters.map(monster => {
-    const findNewTile = (monster, map) => {
-      const newX = Math.floor(Math.random() * 3 - 1 + monster.x);
-      const newY = Math.floor(Math.random() * 3 - 1 + monster.y);
-      if (map[newX][newY] === '.') {
-        return {x: newX, y: newY}
-      } else {
-        return findNewTile(monster, map);
-      }
-    };
-    const newCoords = findNewTile(monster, state.map);
-    monster.sprite.position.x = newCoords.x * 50;
-    monster.sprite.position.y = newCoords.y * 50;
-    return { ...monster, x: newCoords.x, y: newCoords.y };
+    if (inSmell(monster, state)) {
+      return moveToPlayer(monster, state);
+    } else {
+      return moveRandomly(monster, state);
+    }
   });
   return { ...state, monsters };
 }
+
+const moveToPlayer = (monster, state) => {
+  const path = findPath(monster, state.player, state.map);
+  const realPath = path.slice(0, MONSTER_SPEED);
+  const lastNode = realPath[realPath.length - 1];
+  monster.sprite.position.x = lastNode.x * 50;
+  monster.sprite.position.y = lastNode.y * 50;
+  return { ...monster, x: lastNode.x, y: lastNode.y };
+};
 
 function renderFov(state, center) {
   const grid = new Map(transformMapToGraph(state.map));
@@ -160,7 +181,7 @@ function renderSmell(state, center) {
   const grid = new Map(getBlankMap(state.map));
 
   if (state.smell) {
-    state.smell.forEach(sprite => state.app.stage.removeChild(sprite));
+    state.smell.forEach(({ sprite }) => state.app.stage.removeChild(sprite));
   }
 
   compute(grid, [center.x, center.y], state.smellRadius);
@@ -171,12 +192,12 @@ function renderSmell(state, center) {
         sprite.position.x = idxY * 50;
         sprite.position.y = idxX * 50;
         state.app.stage.addChild(sprite);
-        return sprite;
+        return { sprite, x: idxY, y: idxX };
       }
       return null;
     });
   });
-  return flatten(sprites);
+  return flatten(sprites).filter(sp => sp !== null);
 }
 
 const flatten = list =>
