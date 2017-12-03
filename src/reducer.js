@@ -51,11 +51,11 @@ const CLICK = "CLICK";
 
 const initialState = {
   map,
-  smellRadius: 3,
+  smellRadius: 0,
   tiles: null,
   player: { x: 3, y: 3, sprite: null },
   monsters: [{ x: 4, y: 5, sprite: null }, { x: 6, y: 1, sprite: null }],
-  gold: [{ x: 1, y: 4, sprite: null }, { x: 8, y: 5, sprite: null }],
+  gold: [{ x: 1, y: 4, value: 1, sprite: null }, { x: 8, y: 5, value: 2, sprite: null }],
   sprites: {},
   textures: {},
   gameState: {},
@@ -63,7 +63,7 @@ const initialState = {
   trajectory: [],
   entities: {},
   smell: [],
-  sound: null,
+  sound: null
 };
 
 const reducer = (state = initialState, action) => {
@@ -81,18 +81,17 @@ const reducer = (state = initialState, action) => {
       if (path.length > 0 && path[path.length - 1].g <= MAX_MOVE) {
         state.player.sprite.position.x = action.coords.x * 50;
         state.player.sprite.position.y = action.coords.y * 50;
-        const smell = renderSmell(state, action.coords);
         const newState = {
           ...state,
           player: { ...state.player, x: action.coords.x, y: action.coords.y },
-          smell
         };
         renderFov(newState, action.coords);
-        //return newState;
         const st = moveMonsters(newState);
-        state.sound.play('blub');
-        renderFov(st, action.coords);
-        return st;
+        st.sound.play("blub");
+        const st2 = pickGold(st);
+        renderFov(st2, action.coords);
+        const smell = renderSmell(st2, action.coords);
+        return {...st2, smell};
       } else {
         return state;
       }
@@ -123,6 +122,22 @@ const reducer = (state = initialState, action) => {
   }
 };
 
+const pickGold = state => {
+  const index = state.gold.findIndex(
+    ({ x, y }) => { 
+      return x === state.player.x && y === state.player.y
+    }
+  );
+
+  if (index !== -1) {
+    let gold = state.gold.slice(index + 1).concat(state.gold.slice(0, index));
+    state.app.stage.removeChild(state.gold[index].sprite);
+    return { ...state, gold, smellRadius: state.smellRadius + state.gold[index].value };
+  } else {
+    return state;
+  }
+};
+
 const moveRandomly = (monster, state) => {
   const findNewTile = (monster, map) => {
     const newX = Math.floor(Math.random() * 3 - 1 + monster.x);
@@ -145,7 +160,7 @@ const inSmell = (monster, { smell }) =>
 function moveMonsters(state) {
   const monsters = state.monsters.map(monster => {
     if (inSmell(monster, state)) {
-      state.sound.play('lvlup');
+      state.sound.play("lvlup");
       return moveToPlayer(monster, state);
     } else {
       return moveRandomly(monster, state);
@@ -190,6 +205,9 @@ function renderSmell(state, center) {
     state.smell.forEach(({ sprite }) => state.app.stage.removeChild(sprite));
   }
 
+  if (state.smellRadius === 0) {
+    return [];
+  }
   compute(grid, [center.x, center.y], state.smellRadius);
   const sprites = grid.tiles.map((column, idxY) => {
     return column.map((tile, idxX) => {
