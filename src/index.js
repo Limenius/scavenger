@@ -46,7 +46,7 @@ function loadGraphics() {
 
 function initScene() {
   const store = createStore(reducer);
-  const app = new PIXI.Application(1000, 1000, {backgroundColor : 0x000000});
+  const app = new PIXI.Application(1800, 1500, {backgroundColor : 0x000000});
   document.getElementById("game").appendChild(app.view);
   setupUIEvents(store, app.view);
   const mapContainer = new PIXI.Container();

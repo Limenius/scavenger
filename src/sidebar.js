@@ -9,10 +9,10 @@ export function setupSidebar() {
 
     rectangle.beginFill(0x0000000);
     rectangle.lineStyle(2, 0xffffff);
-    rectangle.drawRect(900, 0, 100, 1000);
+    rectangle.drawRect(1500, 0, 300, 1800);
 
     const gold = new PIXI.Sprite(state.textures.gold);
-    gold.position.x = 910;
+    gold.position.x = 1510;
     gold.position.y = 10;
     rectangle.addChild(gold);
 
@@ -23,12 +23,12 @@ export function setupSidebar() {
       "text-align": "center"
     });
     sprite.anchor.set(0.5, 0.5);
-    sprite.x = 960;
+    sprite.x = 1560;
     sprite.y = 10;
     rectangle.addChild(sprite);
 
     const chest = new PIXI.Sprite(state.textures.chest);
-    chest.position.x = 910;
+    chest.position.x = 1510;
     chest.position.y = 60;
     rectangle.addChild(chest);
 
@@ -39,7 +39,7 @@ export function setupSidebar() {
       "text-align": "center"
     });
     textChest.anchor.set(0.5, 0.5);
-    textChest.x = 960;
+    textChest.x = 1560;
     textChest.y = 60;
     rectangle.addChild(textChest);
 
