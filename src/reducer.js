@@ -1,47 +1,14 @@
 import * as PIXI from "pixi.js";
 import { astar, Graph } from "./astar";
 import { Map, compute } from "./fov";
+import initLevel from "./initLevel";
 
 const MAX_MOVE = 6;
 const MONSTER_SPEED = 2;
 
-const mapChar = `
-********************
-*..................*
-*..................*
-*........*.........*
-*........*.........*
-*..................*
-*........*.........*
-*........*.........*
-*..................*
-*........*.........*
-*........*.........*
-*..................*
-*........*.........*
-*........*.........*
-*..................*
-*........*.........*
-*........*.........*
-*..................*
-*........*.........*
-*........*.........*
-*........*........**
-********************
-`;
-
-const prepareMap = mapChar => {
-  const rows = mapChar.split("\n").filter(row => row !== "");
-  return rows.map((row, idx) => {
-    return row.split("").map((tileChar, column) => {
-      return tileChar;
-    });
-  });
-};
-
-const map = prepareMap(mapChar);
 
 const SET_APP = "SET_APP";
+const SET_SMELL_RADIUS = "SET_SMELL_RADIUS";
 const SET_TEXT_BLOCK = "SET_TEXT_BLOCK";
 const REMOVE_TEXT_BLOCK = "REMOVE_TEXT_BLOCK";
 const SET_SOUND = "SET_SOUND";
@@ -50,16 +17,24 @@ const SET_TILES = "SET_TILES";
 const MOUSE_OVER = "MOUSE_OVER";
 const COMPUTE_FOV = "COMPUTE_FOV";
 const CLICK = "CLICK";
+const SET_STATE = "SET_STATE";
+const SET_PLAYER = "SET_PLAYER";
+const SET_GOLD = "SET_GOLD";
+const SET_MONSTERS = "SET_MONSTERS";
+const SET_EXITS = "SET_EXITS";
+const SET_MAP = "SET_MAP";
+const SET_LEVEL = "SET_LEVEL";
 
 const initialState = {
-  map,
+  map: null,
   smellRadius: 0,
+  level: null,
   tiles: null,
   totalGold: 3,
-  player: { x: 3, y: 3, sprite: null },
-  monsters: [{ x: 4, y: 5, sprite: null }, { x: 6, y: 1, sprite: null }],
-  exit: { x: 6, y: 6, sprite: null },
-  gold: [{ x: 1, y: 4, value: 1, sprite: null }, { x: 8, y: 5, value: 2, sprite: null }],
+  player: null,
+  monsters: null,
+  exits: null,
+  gold: null,
   sprites: {},
   textures: {},
   gameState: {},
@@ -73,6 +48,12 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
+    case SET_STATE:
+      return action.state;
+    case SET_MAP:
+      return {...state, map: action.map};
+    case SET_LEVEL:
+      return {...state, level: action.level};
     case SET_APP:
       return { ...state, app: action.app };
     case SET_SOUND:
@@ -81,6 +62,16 @@ const reducer = (state = initialState, action) => {
       return { ...state, textures: action.textures };
     case SET_TILES:
       return { ...state, tiles: action.tiles };
+    case SET_PLAYER:
+      return { ...state, player: action.player };
+    case SET_MONSTERS:
+      return { ...state, monsters: action.monsters };
+    case SET_GOLD:
+      return { ...state, gold: action.gold };
+    case SET_SMELL_RADIUS:
+      return { ...state, smellRadius: action.value };
+    case SET_EXITS:
+      return { ...state, exits: action.exits };
     case SET_TEXT_BLOCK:
       state.app.stage.addChild(action.rectangle);
       return { ...state, textBlock: { text: action.sprite, rectangle: action.rectangle } };
@@ -88,28 +79,8 @@ const reducer = (state = initialState, action) => {
       state.app.stage.removeChild(state.textBlock.rectangle);
       return state;
     case CLICK:
-      if (state.textBlock) {
-        state.app.stage.removeChild(state.textBlock.rectangle);
-        return { ...state, textBlock: null };
-      }
-      const path = findPath(state.player, action.coords, state.map);
-      if (path.length > 0 && path[path.length - 1].g <= MAX_MOVE) {
-        state.player.sprite.position.x = action.coords.x * 50;
-        state.player.sprite.position.y = action.coords.y * 50;
-        const newState = { ...state, player: { ...state.player, x: action.coords.x, y: action.coords.y } };
-        renderFov(newState, action.coords);
-        const st = moveMonsters(newState);
-        st.sound.play("blub");
-        const st2 = pickGold(st);
-        renderFov(st2, action.coords);
-        const smell = renderSmell(st2, action.coords);
-        exitLevel(st2);
-        return { ...st2, smell };
-      } else {
-        return state;
-      }
     case MOUSE_OVER:
-      if (state.textBlock) {
+      if (state.textBlock || !state.map) {
         return state;
       }
       if (!state.entities.selectedTile) {
@@ -135,12 +106,17 @@ const reducer = (state = initialState, action) => {
 };
 
 const exitLevel = state => {
-  const { player, exit, totalGold } = state;
-  if (player.x === exit.x && player.y === exit.y) {
-    if (state.smellRadius === totalGold) {
-      state.sound.play("lvlup");
+  const { player, exits, totalGold } = state;
+  let hasFinished = false;
+  exits.forEach(exit => {
+    if (player.x === exit.x && player.y === exit.y) {
+      if (state.smellRadius === totalGold) {
+        state.sound.play("lvlup");
+        hasFinished = true;
+      }
     }
-  }
+  });
+  return hasFinished;
 }
 
 const pickGold = state => {
@@ -199,7 +175,7 @@ const moveToPlayer = (monster, state) => {
   return { ...monster, x: lastNode.x, y: lastNode.y };
 };
 
-function renderFov(state, center) {
+export function renderFov(state, center) {
   const grid = new Map(transformMapToGraph(state.map));
   compute(grid, [center.x, center.y], 10);
   grid.tiles.forEach((column, idxY) => {
@@ -311,7 +287,7 @@ function findPath(start, end, map) {
 }
 
 export function setApp(app) {
-  return dispatch => dispatch({ type: SET_APP, app });
+  return (dispatch, state) => dispatch({ type: SET_APP, app });
 }
 
 export function setSound(sound) {
@@ -322,20 +298,99 @@ export function setTextures(textures) {
   return { type: SET_TEXTURES, textures };
 }
 
+export function setSmellRadius(value) {
+  return { type: SET_SMELL_RADIUS, value };
+}
+
 export function mouseOver(coords) {
   return { type: MOUSE_OVER, coords };
 }
 
-export function click(coords) {
-  return { type: CLICK, coords };
+export function goNextLevel() {
+  return (dispatch, state) => {
+    let level;
+    if (state.level === null) {
+      level = 0;
+    } else {
+      dispatch(cleanMap());
+      level = state.level + 1;
+    }
+    console.log("loading level "+ level)
+    return dispatch(initLevel(level));
+  }
 }
 
-export function computeFOV(coords) {
+const cleanMap = () => (dispatch, state) => {
+  state.app.stage.removeChild(state.player.sprite);
+  state.monsters.forEach(({sprite}) => state.app.stage.removeChild(sprite))
+  state.gold.forEach(({sprite}) => state.app.stage.removeChild(sprite))
+  state.exits.forEach(({sprite}) => state.app.stage.removeChild(sprite))
+}
+
+export function click(coords) {
+  return (dispatch, state) => {
+    if (state.textBlock) {
+      state.app.stage.removeChild(state.textBlock.rectangle);
+      return dispatch(setState({ ...state, textBlock: null }));
+    }
+    const path = findPath(state.player, coords, state.map);
+    if (path.length > 0 && path[path.length - 1].g <= MAX_MOVE) {
+      state.player.sprite.position.x = coords.x * 50;
+      state.player.sprite.position.y = coords.y * 50;
+      const newState = { ...state, player: { ...state.player, x: coords.x, y: coords.y } };
+      renderFov(newState, coords);
+      const st = moveMonsters(newState);
+      st.sound.play("blub");
+      const st2 = pickGold(st);
+      renderFov(st2, coords);
+      const smell = renderSmell(st2, coords);
+      const hasFinished = exitLevel(st2);
+      if (hasFinished) {
+        console.log("EEEE")
+        return dispatch(goNextLevel());
+      } else {
+        return dispatch(setState({ ...st2, smell }));
+      }
+    } else {
+      return dispatch(setState(state));
+    }
+  };
+}
+
+export function setState(state) {
+  return { type: SET_STATE, state };
+}
+
+export function computeFov(coords) {
   return { type: COMPUTE_FOV, coords };
 }
 
 export function setTiles(tiles) {
   return { type: SET_TILES, tiles };
+}
+
+export function setPlayer(player) {
+  return { type: SET_PLAYER, player };
+}
+
+export function setGold(gold) {
+  return { type: SET_GOLD, gold };
+}
+
+export function setMonsters(monsters) {
+  return { type: SET_MONSTERS, monsters };
+}
+
+export function setExits(exits) {
+  return { type: SET_EXITS, exits };
+}
+
+export function setMap(map) {
+  return { type: SET_MAP, map };
+}
+
+export function setLevel(level) {
+  return { type: SET_LEVEL, level };
 }
 
 export function removeTextBlock() {
@@ -353,12 +408,12 @@ export function setTextBlock(text) {
   sprite.x = 350;
   sprite.y = 350;
   var rectangle = new PIXI.Graphics();
-  
+
   rectangle.beginFill(0x0000000);
-  
+
   // set the line style to have a width of 5 and set the color to red
-  rectangle.lineStyle(2, 0xFFFFFF);
-  
+  rectangle.lineStyle(2, 0xffffff);
+
   // draw a rectangle
   rectangle.drawRect(100, 100, 500, 500);
   rectangle.addChild(sprite);
