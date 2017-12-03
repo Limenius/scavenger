@@ -12,6 +12,7 @@ import {
   setLevel,
   computeFov,
   endGame,
+  setKilled,
 } from "./reducer";
 
 const prepareMap = mapChar => {
@@ -90,5 +91,6 @@ export default function initLevel(levelNumber) {
     dispatch(setSmellRadius(0));
     dispatch(setLevel(levelNumber));
     dispatch(computeFov());
+    dispatch(setKilled(false));
   };
 }

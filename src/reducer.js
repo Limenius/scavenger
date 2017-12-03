@@ -22,6 +22,7 @@ const SET_MONSTERS = "SET_MONSTERS";
 const SET_EXITS = "SET_EXITS";
 const SET_MAP = "SET_MAP";
 const SET_LEVEL = "SET_LEVEL";
+const SET_KILLED = "SET_KILLED";
 
 const initialState = {
   map: null,
@@ -41,7 +42,8 @@ const initialState = {
   entities: {},
   textBlock: null,
   smell: [],
-  sound: null
+  sound: null,
+  killed: false
 };
 
 const reducer = (state = initialState, action) => {
@@ -54,6 +56,10 @@ const reducer = (state = initialState, action) => {
       return { ...state, level: action.level };
     case SET_APP:
       return { ...state, app: action.app };
+    case SET_KILLED:
+    console.log('killing')
+    console.log(action)
+      return { ...state, killed: action.value };
     case SET_SOUND:
       return { ...state, sound: action.sound };
     case SET_TEXTURES:
@@ -316,6 +322,24 @@ export function endGame() {
   return dispatch => dispatch(setTextBlock("END GAME"));
 }
 
+export function killed() {
+  return dispatch => {
+    dispatch(setTextBlock("DEAD. Click to retry level"));
+    dispatch(setKilled(true));
+  };
+}
+
+export function setKilled(value) {
+  return { type: SET_KILLED, value };
+}
+
+export function restartLevel() {
+  return (dispatch, state) => {
+    dispatch(cleanMap());
+    return dispatch(initLevel(state.level));
+  };
+}
+
 export function goNextLevel() {
   return (dispatch, state) => {
     let level;
@@ -338,6 +362,12 @@ const cleanMap = () => (dispatch, state) => {
 
 export function click(coords) {
   return (dispatch, state) => {
+    console.log(state)
+    if (state.killed) {
+      state.app.stage.removeChild(state.textBlock.rectangle);
+      dispatch(removeTextBlock());
+      return dispatch(restartLevel());
+    }
     if (state.textBlock) {
       state.app.stage.removeChild(state.textBlock.rectangle);
       return dispatch(setState({ ...state, textBlock: null }));
@@ -354,7 +384,7 @@ export function click(coords) {
       const st = moveMonsters(newState);
       if (monstersKillPlayer(st)) {
         st.sound.play("lvlup");
-        return dispatch(endGame());
+        return dispatch(killed());
       }
       st.sound.play("blub");
       const st2 = pickGold(st);
