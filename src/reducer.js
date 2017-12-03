@@ -6,6 +6,7 @@ import { createTranslator } from "./translator";
 
 const MAX_MOVE = 6;
 const MONSTER_MAX_MOVE = 2;
+const FOV_RADIUS = 5;
 
 const SET_APP = "SET_APP";
 const SET_MAP_CONTAINER = "SET_MAP_CONTAINER";
@@ -220,7 +221,7 @@ const moveToPlayer = (monster, state) => {
 
 export function renderFov(state, center) {
   const grid = new Map(transformMapToGraph(state.map));
-  compute(grid, [center.x, center.y], 10);
+  compute(grid, [center.x, center.y], FOV_RADIUS);
   grid.tiles.forEach((column, idxY) => {
     column.forEach((tile, idxX) => {
       state.tiles[idxX][idxY].visible = tile.visible;
@@ -397,6 +398,7 @@ const cleanMap = () => (dispatch, state) => {
   state.monsters.forEach(({ sprite }) => state.mapContainer.removeChild(sprite));
   state.gold.forEach(({ sprite }) => state.mapContainer.removeChild(sprite));
   state.exits.forEach(({ sprite }) => state.mapContainer.removeChild(sprite));
+  state.tiles.forEach((row) => row.forEach((sprite) => sprite.visible = false));
 };
 
 // shameful
@@ -529,7 +531,7 @@ export function setTextBlock(text) {
     "text-align": "center"
   });
   sprite.anchor.set(0.5, 0.5);
-  sprite.x = 350;
+  sprite.x = 800;
   sprite.y = 350;
   var rectangle = new PIXI.Graphics();
 
@@ -539,7 +541,7 @@ export function setTextBlock(text) {
   rectangle.lineStyle(2, 0xffffff);
 
   // draw a rectangle
-  rectangle.drawRect(100, 100, 500, 500);
+  rectangle.drawRect(550, 100, 600, 600);
   rectangle.addChild(sprite);
   return { type: SET_TEXT_BLOCK, rectangle: rectangle };
 }

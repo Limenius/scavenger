@@ -38,7 +38,7 @@ const levels = [
 Total gold in them: 3.
 Click when you are ready to start`,
     player: { x: 27, y: 3 },
-    monsters: [{ x: 4, y: 5 }, { x: 6, y: 1 }],
+    monsters: [{ x: 4, y: 5 }, { x: 26, y: 8 }],
     exit: { x: 6, y: 6, sprite: null },
     gold: [
       { x: 24, y: 5, value: 1 },
