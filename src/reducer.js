@@ -7,6 +7,8 @@ const MAX_MOVE = 6;
 const MONSTER_SPEED = 2;
 
 const SET_APP = "SET_APP";
+const SET_MAP_CONTAINER = "SET_MAP_CONTAINER";
+const SET_SIDEBAR_CONTAINER = "SET_SIDEBAR_CONTAINER";
 const SET_SMELL_RADIUS = "SET_SMELL_RADIUS";
 const SET_TEXT_BLOCK = "SET_TEXT_BLOCK";
 const REMOVE_TEXT_BLOCK = "REMOVE_TEXT_BLOCK";
@@ -18,18 +20,24 @@ const COMPUTE_FOV = "COMPUTE_FOV";
 const SET_STATE = "SET_STATE";
 const SET_PLAYER = "SET_PLAYER";
 const SET_GOLD = "SET_GOLD";
+const SET_TOTAL_GOLD = "SET_TOTAL_GOLD";
+const SET_TOTAL_CHESTS = "SET_TOTAL_CHESTS";
 const SET_MONSTERS = "SET_MONSTERS";
 const SET_EXITS = "SET_EXITS";
 const SET_MAP = "SET_MAP";
 const SET_LEVEL = "SET_LEVEL";
 const SET_KILLED = "SET_KILLED";
+const SET_SIDEBAR = "SET_SIDEBAR";
+const SET_COLLECTED = "SET_COLLECTED";
 
 const initialState = {
+  sidebar: { gold: null, chests: null},
   map: null,
   smellRadius: 0,
   level: null,
   tiles: null,
   totalGold: null,
+  totalChests: null,
   player: null,
   monsters: null,
   exits: null,
@@ -43,7 +51,9 @@ const initialState = {
   textBlock: null,
   smell: [],
   sound: null,
-  killed: false
+  killed: false,
+  collectedChests: 0,
+  collectedGold: 0,
 };
 
 const reducer = (state = initialState, action) => {
@@ -52,13 +62,19 @@ const reducer = (state = initialState, action) => {
       return action.state;
     case SET_MAP:
       return { ...state, map: action.map };
+    case SET_SIDEBAR_CONTAINER:
+      return { ...state, sidebarContainer: action.sidebarContainer };
+    case SET_MAP_CONTAINER:
+    return { ...state, mapContainer: action.mapContainer };
+    case SET_SIDEBAR:
+      return { ...state, sidebar: action.sidebar };
     case SET_LEVEL:
       return { ...state, level: action.level };
+    case SET_COLLECTED:
+      return { ...state, collectedGold: action.gold, collectedChests: action.chests };
     case SET_APP:
       return { ...state, app: action.app };
     case SET_KILLED:
-    console.log('killing')
-    console.log(action)
       return { ...state, killed: action.value };
     case SET_SOUND:
       return { ...state, sound: action.sound };
@@ -71,8 +87,11 @@ const reducer = (state = initialState, action) => {
     case SET_MONSTERS:
       return { ...state, monsters: action.monsters };
     case SET_GOLD:
-      const totalGold = action.gold.reduce((acc, curr) => acc + curr.value, 0);
-      return { ...state, gold: action.gold, totalGold };
+      return { ...state, gold: action.gold };
+    case SET_TOTAL_CHESTS:
+      return { ...state, totalChests: action.totalChests };
+    case SET_TOTAL_GOLD:
+      return { ...state, totalGold: action.totalGold };
     case SET_SMELL_RADIUS:
       return { ...state, smellRadius: action.value };
     case SET_EXITS:
@@ -94,7 +113,7 @@ const reducer = (state = initialState, action) => {
         const selectedTile = new PIXI.Sprite(state.textures.selectedTile);
         selectedTile.position.x = action.coords.x * 50;
         selectedTile.position.y = action.coords.y * 50;
-        state.app.stage.addChild(selectedTile);
+        state.mapContainer.addChild(selectedTile);
         const trajectory = renderTrajectory(state, action.coords);
         return {
           ...state,
@@ -137,10 +156,12 @@ const pickGold = state => {
 
   if (index !== -1) {
     let gold = state.gold.slice(index + 1).concat(state.gold.slice(0, index));
-    state.app.stage.removeChild(state.gold[index].sprite);
+    state.mapContainer.removeChild(state.gold[index].sprite);
     return {
       ...state,
       gold,
+      collectedGold: state.collectedGold + state.gold[index].value,
+      collectedChests: state.collectedChests + 1,
       smellRadius: state.smellRadius + state.gold[index].value
     };
   } else {
@@ -211,7 +232,7 @@ function renderSmell(state, center) {
   const grid = new Map(getBlankMap(state.map));
 
   if (state.smell) {
-    state.smell.forEach(({ sprite }) => state.app.stage.removeChild(sprite));
+    state.smell.forEach(({ sprite }) => state.mapContainer.removeChild(sprite));
   }
 
   if (state.smellRadius === 0) {
@@ -224,7 +245,7 @@ function renderSmell(state, center) {
         const sprite = new PIXI.Sprite(state.textures.smell);
         sprite.position.x = idxY * 50;
         sprite.position.y = idxX * 50;
-        state.app.stage.addChild(sprite);
+        state.mapContainer.addChild(sprite);
         return { sprite, x: idxY, y: idxX };
       }
       return null;
@@ -272,7 +293,7 @@ const transformMapToGraph = map => {
 
 function renderTrajectory(state, end) {
   if (state.trajectory) {
-    state.trajectory.forEach(node => state.app.stage.removeChild(node));
+    state.trajectory.forEach(node => state.mapContainer.removeChild(node));
   }
   const path = findPath(state.player, end, state.map);
   return path.map(({ x, y, g }) => {
@@ -280,7 +301,7 @@ function renderTrajectory(state, end) {
       const sprite = new PIXI.Sprite(state.textures.selectedTile);
       sprite.position.x = x * 50;
       sprite.position.y = y * 50;
-      state.app.stage.addChild(sprite);
+      state.mapContainer.addChild(sprite);
       return sprite;
     }
     return null;
@@ -299,7 +320,15 @@ function findPath(start, end, map) {
 }
 
 export function setApp(app) {
-  return (dispatch, state) => dispatch({ type: SET_APP, app });
+  return { type: SET_APP, app };
+}
+
+export function setSidebarContainer(sidebarContainer) {
+  return { type: SET_SIDEBAR_CONTAINER, sidebarContainer };
+}
+
+export function setMapContainer(mapContainer) {
+  return { type: SET_MAP_CONTAINER, mapContainer };
 }
 
 export function setSound(sound) {
@@ -354,17 +383,17 @@ export function goNextLevel() {
 }
 
 const cleanMap = () => (dispatch, state) => {
-  state.app.stage.removeChild(state.player.sprite);
-  state.monsters.forEach(({ sprite }) => state.app.stage.removeChild(sprite));
-  state.gold.forEach(({ sprite }) => state.app.stage.removeChild(sprite));
-  state.exits.forEach(({ sprite }) => state.app.stage.removeChild(sprite));
+  state.mapContainer.removeChild(state.player.sprite);
+  state.monsters.forEach(({ sprite }) => state.mapContainer.removeChild(sprite));
+  state.gold.forEach(({ sprite }) => state.mapContainer.removeChild(sprite));
+  state.exits.forEach(({ sprite }) => state.mapContainer.removeChild(sprite));
 };
 
+// shameful
 export function click(coords) {
   return (dispatch, state) => {
-    console.log(state)
     if (state.killed) {
-      state.app.stage.removeChild(state.textBlock.rectangle);
+      state.mapContainer.removeChild(state.textBlock.rectangle);
       dispatch(removeTextBlock());
       return dispatch(restartLevel());
     }
@@ -388,6 +417,8 @@ export function click(coords) {
       }
       st.sound.play("blub");
       const st2 = pickGold(st);
+      // can do this one because it is only side effects.
+      dispatch(setCollected({chests: st2.collectedChests, gold: st2.collectedGold}));
       renderFov(st2, coords);
       const smell = renderSmell(st2, coords);
       const hasFinished = exitLevel(st2);
@@ -437,12 +468,40 @@ export function setMap(map) {
   return { type: SET_MAP, map };
 }
 
+export function setTotalGold(totalGold) {
+  return { type: SET_TOTAL_GOLD, totalGold };
+}
+
+export function setTotalChests(totalChests) {
+  return { type: SET_TOTAL_CHESTS, totalChests };
+}
+
 export function setLevel(level) {
   return { type: SET_LEVEL, level };
 }
 
 export function removeTextBlock() {
   return { type: REMOVE_TEXT_BLOCK };
+}
+
+export function setSidebar(sidebar) {
+  return { type: SET_SIDEBAR, sidebar };
+}
+
+export function setCollected({gold, chests}) {
+  return (dispatch, state) => {
+    dispatch({ type: SET_COLLECTED, gold, chests });
+    dispatch(setSidebarValues({gold, chests}));
+  };
+}
+
+export function setSidebarValues({chests, gold}) {
+  return (dispatch, state) => {
+    const totalGold = state.totalGold;
+    const totalChests = state.totalChests;
+    state.sidebar.chests.text = `${chests}/${totalChests}`;
+    state.sidebar.gold.text = `${gold}/${totalGold}`;
+  }
 }
 
 export function setTextBlock(text) {

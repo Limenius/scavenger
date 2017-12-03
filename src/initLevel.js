@@ -4,6 +4,8 @@ import {
   setTiles,
   setPlayer,
   setGold,
+  setTotalChests,
+  setTotalGold,
   setExits,
   setMonsters,
   setMap,
@@ -13,6 +15,8 @@ import {
   computeFov,
   endGame,
   setKilled,
+  setSidebarValues,
+  setCollected,
 } from "./reducer";
 
 const prepareMap = mapChar => {
@@ -47,7 +51,7 @@ export default function initLevel(levelNumber) {
         }
         tile.position.x = column * 50;
         tile.position.y = idx * 50;
-        state.app.stage.addChild(tile);
+        state.mapContainer.addChild(tile);
         return tile;
       });
     });
@@ -58,14 +62,14 @@ export default function initLevel(levelNumber) {
     item.sprite = new PIXI.Sprite(state.textures.player);
     item.sprite.position.x = item.x * 50;
     item.sprite.position.y = item.y * 50;
-    state.app.stage.addChild(item.sprite);
+    state.mapContainer.addChild(item.sprite);
     dispatch(setPlayer({ ...level.player, sprite: item.sprite }));
 
     const exit = level.exit;
     exit.sprite = new PIXI.Sprite(state.textures.exit);
     exit.sprite.position.x = exit.x * 50;
     exit.sprite.position.y = exit.y * 50;
-    state.app.stage.addChild(exit.sprite);
+    state.mapContainer.addChild(exit.sprite);
     dispatch(setExits([{...exit }]));
 
     let gold = [];
@@ -73,17 +77,18 @@ export default function initLevel(levelNumber) {
       item.sprite = new PIXI.Sprite(state.textures.gold);
       item.sprite.position.x = item.x * 50;
       item.sprite.position.y = item.y * 50;
-      state.app.stage.addChild(item.sprite);
+      state.mapContainer.addChild(item.sprite);
       gold.push({...item})
     });
     dispatch(setGold(gold));
+    dispatch(setTotalChests(level.gold.length));
 
     let monsters = [];
     level.monsters.forEach(item => {
       item.sprite = new PIXI.Sprite(state.textures.monster);
       item.sprite.position.x = item.x * 50;
       item.sprite.position.y = item.y * 50;
-      state.app.stage.addChild(item.sprite);
+      state.mapContainer.addChild(item.sprite);
       monsters.push({...item})
     });
     dispatch(setMonsters(monsters));
@@ -92,5 +97,9 @@ export default function initLevel(levelNumber) {
     dispatch(setLevel(levelNumber));
     dispatch(computeFov());
     dispatch(setKilled(false));
+    dispatch(setCollected({gold: 0, chests: 0}));
+    dispatch(setTotalChests(level.gold.length));
+    dispatch(setTotalGold(level.gold.reduce((acc, curr) => acc + curr.value, 0)));
+    dispatch(setSidebarValues({gold: 0, chests: 0}));
   };
 }

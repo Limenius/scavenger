@@ -1,7 +1,17 @@
 import * as PIXI from "pixi.js";
 import { createStore } from "./store";
-import reducer, { setApp, setTextures, mouseOver, click, computeFOV, setSound, goNextLevel } from "./reducer";
+import reducer, {
+  setMapContainer,
+  setSidebarContainer,
+  setApp,
+  setTextures,
+  mouseOver,
+  click,
+  setSound,
+  goNextLevel,
+} from "./reducer";
 import { getMousePos, getMapCoord } from "./util";
+import { setupSidebar } from "./sidebar";
 import Sound from "./sound";
 import WebFont from "webfontloader";
 
@@ -27,6 +37,7 @@ function loadGraphics() {
       .add("selectedTile", "./img/selectedTile.png")
       .add("smell", "./img/smell.png")
       .add("exit", "./img/exit.png")
+      .add("chest", "./img/chest.png")
       .load((loader, resources) => {
         resolve({ loader, resources });
       });
@@ -38,7 +49,14 @@ function initScene() {
   const app = new PIXI.Application(1000, 1000, {backgroundColor : 0x000000});
   document.getElementById("game").appendChild(app.view);
   setupUIEvents(store, app.view);
-  return store.dispatch(setApp(app));
+  const mapContainer = new PIXI.Container();
+  const sidebarContainer = new PIXI.Container();
+  app.stage.addChild(mapContainer);
+  app.stage.addChild(sidebarContainer);
+  store.dispatch(setApp(app));
+  store.dispatch(setMapContainer(mapContainer));
+  store.dispatch(setSidebarContainer(sidebarContainer));
+  return store
 }
 
 function setupUIEvents(store, element) {
@@ -59,7 +77,7 @@ function mouseClick(event, store) {
 }
 
 function onLoadResources(loader, resources, store) {
-  const items = ["tile", "wall", "player", "monster", "gold", "selectedTile", "smell", "exit"];
+  const items = ["tile", "wall", "player", "monster", "gold", "selectedTile", "smell", "exit", "chest"];
   const textures = items.reduce((acc, name) => {
     acc[name] = new PIXI.Texture(
       resources[name].texture,
@@ -67,7 +85,9 @@ function onLoadResources(loader, resources, store) {
     );
     return acc;
   }, {});
-  store.dispatch(setTextures(textures)).dispatch(goNextLevel());
+  store.dispatch(setTextures(textures))
+  store.dispatch(setupSidebar());
+  store.dispatch(goNextLevel());
 }
 
 WebFont.load({
