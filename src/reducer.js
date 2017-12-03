@@ -428,7 +428,7 @@ export function click(coords) {
       const st2 = pickGold(st);
 
       const animator = createTranslator(path, state.player.sprite, state.app.ticker)
-      state.app.ticker.add(animator());
+      state.app.ticker.add(animator);
 
       // can do this one because it is only side effects.
       dispatch(
