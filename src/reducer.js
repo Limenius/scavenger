@@ -53,8 +53,10 @@ const initialState = {
   map,
   smellRadius: 0,
   tiles: null,
+  totalGold: 3,
   player: { x: 3, y: 3, sprite: null },
   monsters: [{ x: 4, y: 5, sprite: null }, { x: 6, y: 1, sprite: null }],
+  exit: { x: 6, y: 6, sprite: null },
   gold: [{ x: 1, y: 4, value: 1, sprite: null }, { x: 8, y: 5, value: 2, sprite: null }],
   sprites: {},
   textures: {},
@@ -91,6 +93,7 @@ const reducer = (state = initialState, action) => {
         const st2 = pickGold(st);
         renderFov(st2, action.coords);
         const smell = renderSmell(st2, action.coords);
+        exitLevel(st2);
         return {...st2, smell};
       } else {
         return state;
@@ -121,6 +124,15 @@ const reducer = (state = initialState, action) => {
       return state;
   }
 };
+
+const exitLevel = state => {
+  const { player, exit, totalGold } = state;
+  if (player.x === exit.x && player.y === exit.y) {
+    if (state.smellRadius === totalGold) {
+      state.sound.play("lvlup");
+    }
+  }
+}
 
 const pickGold = state => {
   const index = state.gold.findIndex(

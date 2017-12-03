@@ -32,6 +32,12 @@ export default function render(store) {
   item.sprite.position.y = item.y * 50;
   scene.app.stage.addChild(item.sprite);
 
+  const exit = scene.exit;
+  exit.sprite = new PIXI.Sprite(scene.textures.exit);
+  exit.sprite.position.x = exit.x * 50;
+  exit.sprite.position.y = exit.y * 50;
+  scene.app.stage.addChild(exit.sprite);
+
   scene.gold.forEach(item => {
     item.sprite = new PIXI.Sprite(scene.textures.gold);
     item.sprite.position.x = item.x * 50;
