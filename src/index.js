@@ -1,13 +1,16 @@
 import * as PIXI from "pixi.js";
 import { createStore } from "./store";
-import reducer, { setApp, setTextures, mouseOver, click, computeFOV } from "./reducer";
+import reducer, { setApp, setTextures, mouseOver, click, computeFOV, setSound } from "./reducer";
 import { getMousePos, getMapCoord } from "./util";
 import setupScene from "./renderScene"
+import Sound from "./sound";
 
 function start() {
   const store = initScene();
-  Promise.all([loadGraphics()]).then(([{ loader, resources }]) => {
+  const sound = new Sound();
+  Promise.all([loadGraphics(), sound.load()]).then(([{ loader, resources }, soundResolution]) => {
     onLoadResources(loader, resources, store);
+    store.dispatch(setSound(sound))
   });
 }
 

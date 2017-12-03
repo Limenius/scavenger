@@ -15,7 +15,8 @@ var config = {
   },
   plugins: [
     new CopyWebpackPlugin([
-      { from: 'assets/', to: 'img/' },
+      { from: 'assets/images/', to: 'img/' },
+      { from: 'assets/sounds/', to: 'sounds/' },
     ]),
     new CleanWebpackPlugin(["public"]),
     new HtmlWebpackPlugin({

@@ -42,6 +42,7 @@ const prepareMap = mapChar => {
 const map = prepareMap(mapChar);
 
 const SET_APP = "SET_APP";
+const SET_SOUND = "SET_SOUND";
 const SET_TEXTURES = "SET_TEXTURES";
 const SET_TILES = "SET_TILES";
 const MOUSE_OVER = "MOUSE_OVER";
@@ -61,13 +62,16 @@ const initialState = {
   renderer: null,
   trajectory: [],
   entities: {},
-  smell: []
+  smell: [],
+  sound: null,
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case SET_APP:
       return { ...state, app: action.app };
+    case SET_SOUND:
+      return { ...state, sound: action.sound };
     case SET_TEXTURES:
       return { ...state, textures: action.textures };
     case SET_TILES:
@@ -86,6 +90,7 @@ const reducer = (state = initialState, action) => {
         renderFov(newState, action.coords);
         //return newState;
         const st = moveMonsters(newState);
+        state.sound.play('blub');
         renderFov(st, action.coords);
         return st;
       } else {
@@ -267,6 +272,10 @@ function findPath(start, end, map) {
 
 export function setApp(app) {
   return { type: SET_APP, app };
+}
+
+export function setSound(sound) {
+  return { type: SET_SOUND, sound };
 }
 
 export function setTextures(textures) {
