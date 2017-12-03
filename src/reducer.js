@@ -83,8 +83,10 @@ const reducer = (state = initialState, action) => {
           smell
         };
         renderFov(newState, action.coords);
-        return newState;
-        //return moveMonsters(newState);
+        //return newState;
+        const st = moveMonsters(newState);
+        renderFov(st, action.coords);
+        return st;
       } else {
         return state;
       }
@@ -118,9 +120,18 @@ const reducer = (state = initialState, action) => {
 function moveMonsters(state) {
   const monsters = state.monsters.map(monster => {
     const findNewTile = (monster, map) => {
-      const displacementX = Math.random() * 3 - 1;
-      const displacementY = Math.random() * 3 - 1;
+      const newX = Math.floor(Math.random() * 3 - 1 + monster.x);
+      const newY = Math.floor(Math.random() * 3 - 1 + monster.y);
+      if (map[newX][newY] === '.') {
+        return {x: newX, y: newY}
+      } else {
+        return findNewTile(monster, map);
+      }
     };
+    const newCoords = findNewTile(monster, state.map);
+    monster.sprite.position.x = newCoords.x * 50;
+    monster.sprite.position.y = newCoords.y * 50;
+    return { ...monster, x: newCoords.x, y: newCoords.y };
   });
   return { ...state, monsters };
 }
