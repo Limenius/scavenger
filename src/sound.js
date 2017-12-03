@@ -20,7 +20,39 @@ export default class Sound {
           onload: function() {
             resolve();
           }
-        })
+        }),
+        ping: new Howl({
+          src: ["./sounds/ping.wav"],
+          loop: false,
+          volume: 1,
+          onload: function() {
+            resolve();
+          }
+        }),
+        pong: new Howl({
+          src: ["./sounds/pong.aiff"],
+          loop: false,
+          volume: 1,
+          onload: function() {
+            resolve();
+          }
+        }),
+        bad: new Howl({
+          src: ["./sounds/bad.wav"],
+          loop: false,
+          volume: 1,
+          onload: function() {
+            resolve();
+          }
+        }),
+        gameover: new Howl({
+          src: ["./sounds/gameover.wav"],
+          loop: false,
+          volume: 1,
+          onload: function() {
+            resolve();
+          }
+        }),
       };
     });
   }

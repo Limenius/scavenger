@@ -201,6 +201,11 @@ function moveMonsters(state) {
 
 const moveToPlayer = (monster, state) => {
   const path = findPath(monster, state.player, state.map);
+  if (MONSTER_SPEED < path.length) {
+      state.sound.play('bad');
+  } else {
+      state.sound.play('gameover');
+  }
   const realPath = path.slice(0, MONSTER_SPEED);
   const lastNode = realPath[realPath.length - 1];
   monster.sprite.position.x = lastNode.x * 50;
@@ -415,7 +420,7 @@ export function click(coords) {
         st.sound.play("lvlup");
         return dispatch(killed());
       }
-      st.sound.play("blub");
+        //st.sound.play("blub");
       const st2 = pickGold(st);
       // can do this one because it is only side effects.
       dispatch(setCollected({chests: st2.collectedChests, gold: st2.collectedGold}));
