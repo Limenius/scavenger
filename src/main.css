@@ -1,0 +1,19 @@
+@font-face {
+  font-family: "Pixilator";
+  src: url('./fonts/pixilator.eot');
+  src: url('./fonts/pixilator.eot?#iefix') format('embedded-opentype'),
+       url('./fonts/pixilator.woff') format('woff'),
+       url('./fonts/pixilator.ttf') format('truetype'),
+       url('./fonts/pixilator.svg#Pixilator') format('svg');
+}
+
+body {
+  font-family: 'Pixilator',sans-serif;
+  color: black;
+  background-color: #212a43;
+}
+
+#main-container {
+  width: 1000px;
+  margin: 0 auto;
+}

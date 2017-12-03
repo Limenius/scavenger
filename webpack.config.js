@@ -15,8 +15,8 @@ var config = {
   },
   plugins: [
     new CopyWebpackPlugin([
-      { from: 'assets/images/', to: 'img/' },
-      { from: 'assets/sounds/', to: 'sounds/' },
+      { from: "assets/images/", to: "img/" },
+      { from: "assets/sounds/", to: "sounds/" }
     ]),
     new CleanWebpackPlugin(["public"]),
     new HtmlWebpackPlugin({
@@ -30,7 +30,22 @@ var config = {
         test: /\.jsx?/,
         loaders: ["babel-loader"],
         exclude: /node_modules/
-      }
+      },
+      {
+        test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
+        loader: "url-loader?limit=10000&mimetype=application/font-woff"
+      },
+      {
+        test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+        loader: "url-loader?limit=10000&mimetype=application/octet-stream"
+      },
+      { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: "file-loader" },
+      { test: /\.png(\?v=\d+\.\d+\.\d+)?$/, loader: "file-loader" },
+      {
+        test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+        loader: "url-loader?limit=10000&mimetype=image/svg+xml"
+      },
+      { test: /\.css$/i, loaders: ["style-loader", "css-loader"] }
     ]
   }
 };

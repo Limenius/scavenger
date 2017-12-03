@@ -42,6 +42,8 @@ const prepareMap = mapChar => {
 const map = prepareMap(mapChar);
 
 const SET_APP = "SET_APP";
+const SET_TEXT_BLOCK = "SET_TEXT_BLOCK";
+const REMOVE_TEXT_BLOCK = "REMOVE_TEXT_BLOCK";
 const SET_SOUND = "SET_SOUND";
 const SET_TEXTURES = "SET_TEXTURES";
 const SET_TILES = "SET_TILES";
@@ -64,6 +66,7 @@ const initialState = {
   renderer: null,
   trajectory: [],
   entities: {},
+  textBlock: null,
   smell: [],
   sound: null
 };
@@ -78,15 +81,22 @@ const reducer = (state = initialState, action) => {
       return { ...state, textures: action.textures };
     case SET_TILES:
       return { ...state, tiles: action.tiles };
+    case SET_TEXT_BLOCK:
+      state.app.stage.addChild(action.rectangle);
+      return { ...state, textBlock: { text: action.sprite, rectangle: action.rectangle } };
+    case REMOVE_TEXT_BLOCK:
+      state.app.stage.removeChild(state.textBlock.rectangle);
+      return state;
     case CLICK:
+      if (state.textBlock) {
+        state.app.stage.removeChild(state.textBlock.rectangle);
+        return { ...state, textBlock: null };
+      }
       const path = findPath(state.player, action.coords, state.map);
       if (path.length > 0 && path[path.length - 1].g <= MAX_MOVE) {
         state.player.sprite.position.x = action.coords.x * 50;
         state.player.sprite.position.y = action.coords.y * 50;
-        const newState = {
-          ...state,
-          player: { ...state.player, x: action.coords.x, y: action.coords.y },
-        };
+        const newState = { ...state, player: { ...state.player, x: action.coords.x, y: action.coords.y } };
         renderFov(newState, action.coords);
         const st = moveMonsters(newState);
         st.sound.play("blub");
@@ -94,22 +104,21 @@ const reducer = (state = initialState, action) => {
         renderFov(st2, action.coords);
         const smell = renderSmell(st2, action.coords);
         exitLevel(st2);
-        return {...st2, smell};
+        return { ...st2, smell };
       } else {
         return state;
       }
     case MOUSE_OVER:
+      if (state.textBlock) {
+        return state;
+      }
       if (!state.entities.selectedTile) {
         const selectedTile = new PIXI.Sprite(state.textures.selectedTile);
         selectedTile.position.x = action.coords.x * 50;
         selectedTile.position.y = action.coords.y * 50;
         state.app.stage.addChild(selectedTile);
         const trajectory = renderTrajectory(state, action.coords);
-        return {
-          ...state,
-          trajectory,
-          entities: { ...state.entities, selectedTile }
-        };
+        return { ...state, trajectory, entities: { ...state.entities, selectedTile } };
       } else {
         state.entities.selectedTile.position.x = action.coords.x * 50;
         state.entities.selectedTile.position.y = action.coords.y * 50;
@@ -327,6 +336,33 @@ export function computeFOV(coords) {
 
 export function setTiles(tiles) {
   return { type: SET_TILES, tiles };
+}
+
+export function removeTextBlock() {
+  return { type: REMOVE_TEXT_BLOCK };
+}
+
+export function setTextBlock(text) {
+  const sprite = new PIXI.Text(text, {
+    fontFamily: "Pixilator",
+    fontSize: "18px",
+    fill: 0xeeeeee,
+    "text-align": "center"
+  });
+  sprite.anchor.set(0.5, 0.5);
+  sprite.x = 350;
+  sprite.y = 350;
+  var rectangle = new PIXI.Graphics();
+  
+  rectangle.beginFill(0x0000000);
+  
+  // set the line style to have a width of 5 and set the color to red
+  rectangle.lineStyle(2, 0xFFFFFF);
+  
+  // draw a rectangle
+  rectangle.drawRect(100, 100, 500, 500);
+  rectangle.addChild(sprite);
+  return { type: SET_TEXT_BLOCK, rectangle: rectangle };
 }
 
 export default reducer;

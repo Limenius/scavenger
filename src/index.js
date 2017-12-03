@@ -1,9 +1,12 @@
 import * as PIXI from "pixi.js";
 import { createStore } from "./store";
-import reducer, { setApp, setTextures, mouseOver, click, computeFOV, setSound } from "./reducer";
+import reducer, { setApp, setTextures, mouseOver, click, computeFOV, setSound, setTextBlock } from "./reducer";
 import { getMousePos, getMapCoord } from "./util";
 import setupScene from "./renderScene"
 import Sound from "./sound";
+import WebFont from "webfontloader";
+
+require("./main.css");
 
 function start() {
   const store = initScene();
@@ -66,7 +69,18 @@ function onLoadResources(loader, resources, store) {
     return acc;
   }, {});
   setupScene(store.dispatch(setTextures(textures)));
+  store.dispatch(setTextBlock(`Level 0.
+2 tresure chests.
+Total gold in them: 3.
+Click when you are ready to start`));
   store.dispatch(computeFOV());
 }
 
-start();
+WebFont.load({
+  custom: {
+      families: ['Pixilator']
+  },
+  active: function() {
+      start();
+  }
+});
