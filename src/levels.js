@@ -30,7 +30,7 @@ Total gold in them: 3.
 Click when you are ready to start`,
     totalGold: 3,
     player: { x: 3, y: 3 },
-    monsters: [{ x: 4, y: 5 }, { x: 6, y: 1 }],
+    monsters: [], //[{ x: 4, y: 5 }, { x: 6, y: 1 }],
     exit: { x: 6, y: 6, sprite: null },
     gold: [
       { x: 1, y: 4, value: 1 },
@@ -68,7 +68,7 @@ Total gold in them: 6.
 Click when you are ready to start`,
     totalGold: 6,
     player: { x: 3, y: 3 },
-    monsters: [{ x: 4, y: 5 }, { x: 6, y: 1 }],
+    monsters: [],//[{ x: 4, y: 5 }, { x: 6, y: 1 }],
     exit: { x: 6, y: 6, sprite: null },
     gold: [
       { x: 1, y: 4, value: 1 },

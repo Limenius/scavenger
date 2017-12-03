@@ -30,7 +30,7 @@ const initialState = {
   smellRadius: 0,
   level: null,
   tiles: null,
-  totalGold: 3,
+  totalGold: null,
   player: null,
   monsters: null,
   exits: null,
@@ -67,7 +67,8 @@ const reducer = (state = initialState, action) => {
     case SET_MONSTERS:
       return { ...state, monsters: action.monsters };
     case SET_GOLD:
-      return { ...state, gold: action.gold };
+      const totalGold = action.gold.reduce((acc, curr) => acc + curr.value, 0);
+      return { ...state, gold: action.gold, totalGold };
     case SET_SMELL_RADIUS:
       return { ...state, smellRadius: action.value };
     case SET_EXITS:
@@ -306,6 +307,10 @@ export function mouseOver(coords) {
   return { type: MOUSE_OVER, coords };
 }
 
+export function endGame() {
+  return dispatch => dispatch(setTextBlock("END GAME"));
+}
+
 export function goNextLevel() {
   return (dispatch, state) => {
     let level;
@@ -315,7 +320,6 @@ export function goNextLevel() {
       dispatch(cleanMap());
       level = state.level + 1;
     }
-    console.log("loading level "+ level)
     return dispatch(initLevel(level));
   }
 }
@@ -346,7 +350,6 @@ export function click(coords) {
       const smell = renderSmell(st2, coords);
       const hasFinished = exitLevel(st2);
       if (hasFinished) {
-        console.log("EEEE")
         return dispatch(goNextLevel());
       } else {
         return dispatch(setState({ ...st2, smell }));

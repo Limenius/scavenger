@@ -11,6 +11,7 @@ import {
   setSmellRadius,
   setLevel,
   computeFov,
+  endGame,
 } from "./reducer";
 
 const prepareMap = mapChar => {
@@ -23,8 +24,11 @@ const prepareMap = mapChar => {
 };
 
 export default function initLevel(levelNumber) {
-  const level = levels[levelNumber];
   return (dispatch, state) => {
+    if (levelNumber >= levels.length) {
+      return dispatch(endGame());
+    }
+    const level = levels[levelNumber];
     const rows = prepareMap(level.map);
     dispatch(setMap(rows));
     const tiles = rows.map((row, idx) => {
