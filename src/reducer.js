@@ -2,7 +2,7 @@ import * as PIXI from "pixi.js";
 import { astar, Graph } from "./astar";
 import { Map, compute } from "./fov";
 
-const map = `
+const mapChar = `
 ********************
 *..................*
 *..................*
@@ -26,6 +26,17 @@ const map = `
 *........*........**
 ********************
 `;
+
+const prepareMap = mapChar => {
+  const rows = mapChar.split("\n").filter(row => row !== "");
+  return rows.map((row, idx) => {
+    return row.split("").map((tileChar, column) => {
+      return tileChar;
+    });
+  });
+};
+
+const map = prepareMap(mapChar);
 
 const SET_APP = "SET_APP";
 const SET_TEXTURES = "SET_TEXTURES";
@@ -73,6 +84,7 @@ const reducer = (state = initialState, action) => {
         };
         renderFov(newState, action.coords);
         return newState;
+        //return moveMonsters(newState);
       } else {
         return state;
       }
@@ -97,11 +109,21 @@ const reducer = (state = initialState, action) => {
     case COMPUTE_FOV:
       renderFov(state, state.player);
       const smell = renderSmell(state, state.player);
-      return {...state, smell};
+      return { ...state, smell };
     default:
       return state;
   }
 };
+
+function moveMonsters(state) {
+  const monsters = state.monsters.map(monster => {
+    const findNewTile = (monster, map) => {
+      const displacementX = Math.random() * 3 - 1;
+      const displacementY = Math.random() * 3 - 1;
+    };
+  });
+  return { ...state, monsters };
+}
 
 function renderFov(state, center) {
   const grid = new Map(transformMapToGraph(state.map));
@@ -113,12 +135,12 @@ function renderFov(state, center) {
         if (monster.y === idxX && monster.x === idxY) {
           monster.sprite.visible = tile.visible;
         }
-      })
+      });
       state.gold.forEach(gold => {
         if (gold.y === idxX && gold.x === idxY) {
           gold.sprite.visible = tile.visible;
         }
-      })
+      });
     });
   });
 }
@@ -146,10 +168,8 @@ function renderSmell(state, center) {
   return flatten(sprites);
 }
 
-
-const flatten = list => list.reduce(
-  (a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []
-);
+const flatten = list =>
+  list.reduce((a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []);
 
 function transpose(a) {
   return Object.keys(a[0]).map(function(c) {
@@ -160,9 +180,8 @@ function transpose(a) {
 }
 
 const getBlankMap = map => {
-  const rows = map.split("\n").filter(row => row !== "");
-  const grid = rows.map((row, idx) => {
-    return row.split("").map((tileChar, column) => {
+  const grid = map.map((row, idx) => {
+    return row.map((tileChar, column) => {
       return 1;
     });
   });
@@ -170,9 +189,9 @@ const getBlankMap = map => {
 };
 
 const transformMapToGraph = map => {
-  const rows = map.split("\n").filter(row => row !== "");
+  const rows = map.filter(row => row !== "");
   const grid = rows.map((row, idx) => {
-    return row.split("").map((tileChar, column) => {
+    return row.map((tileChar, column) => {
       switch (tileChar) {
         case ".":
           return 1;

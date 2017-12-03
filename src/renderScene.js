@@ -3,9 +3,9 @@ import { setTiles } from "./reducer";
 
 export default function render(store) {
   const scene = store.getState();
-  const rows = scene.map.split("\n").filter(row => row !== "");
+  const rows = scene.map;
   const tiles = rows.map((row, idx) => {
-    return row.split("").map((tileChar, column) => {
+    return row.map((tileChar, column) => {
       let tile;
       switch (tileChar) {
         case ".":
