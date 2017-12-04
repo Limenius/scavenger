@@ -30,7 +30,10 @@ const levels = [
 ************************
 `,
     text: `Level 0.
-Collect the treasure and exit the pyramid.
+When exploring pyramids, it is important to learn
+learn how to exit them.
+
+Find the stairs and exit the pyramid.
 
 1 tresure chest.
 Total gold in it: 1.
@@ -39,10 +42,9 @@ Click when you are ready to start`,
     player: { x: 9, y: 2 },
     monsters: [],
     exit: [
-      { x: 13, y: 7, sprite: null }
+      { x: 15, y: 9, sprite: null }
     ],
     gold: [
-      { x: 9, y: 3, value: 1 },
     ],
     spells: []
   },
@@ -77,21 +79,25 @@ Click when you are ready to start`,
 ************************
 `,
     text: `Level 1.
-Monsters are dumb and blind, but they have
-a very good nose for adventures carrying gold.
-Avoid them getting near you.
+As everybody knows, pyramids have mummies
+protecting their treasures.
+
+Mummies are blind and dumb, but they have a
+good nose for people carrying gold.
+
+Avoid them noticing you.
 
 1 tresure chest.
-Total gold in it: 2.
+Total gold in it: 1.
 
 Click when you are ready to start`,
     player: { x: 9, y: 2 },
-    monsters: [{ x: 11, y: 7 }],
+    monsters: [{ x: 11, y: 7 }, { x: 14, y: 4 }],
     exit: [
       { x: 13, y: 7, sprite: null }
     ],
     gold: [
-      { x: 9, y: 4, value: 2 }
+      { x: 9 , y: 4, value: 1 },
     ],
     spells: []
   },
@@ -129,12 +135,14 @@ Click when you are ready to start`,
 Some treasures have more gold than others.
 Carrying very precious treasures is risky.
 
+Collect the treasure and exit carefully.
+
 1 tresure chests.
 Total gold in them: 3.
 
 Click when you are ready to start`,
     player: { x: 9, y: 2 },
-    monsters: [{ x: 11, y: 7 }],
+    monsters: [{ x: 11, y: 7 }, ],
     exit: [
       { x: 7, y: 7, sprite: null }
     ],
