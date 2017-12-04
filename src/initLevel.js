@@ -61,6 +61,7 @@ export default function initLevel(levelNumber) {
 
     const item = level.player;
     item.sprite = new PIXI.extras.AnimatedSprite([state.textures.hero_0, state.textures.hero_1, state.textures.hero_2, state.textures.hero_3, state.textures.hero_4]);
+    item.sprite.animationSpeed = 0.4;
     item.sprite.position.x = item.x * 50;
     item.sprite.position.y = item.y * 50 - 20;
     state.mapContainer.addChild(item.sprite);
