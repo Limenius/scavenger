@@ -42,7 +42,7 @@ export default function initLevel(levelNumber) {
         let tile;
         switch (tileChar) {
           case ".":
-            tile = new PIXI.Sprite(state.textures.tile);
+            tile = new PIXI.Sprite(state.textures.floor);
             break;
           case "*":
             tile = new PIXI.Sprite(state.textures.wall);
@@ -59,13 +59,6 @@ export default function initLevel(levelNumber) {
 
     dispatch(setTiles(tiles));
 
-    const item = level.player;
-    item.sprite = new PIXI.extras.AnimatedSprite([state.textures.hero_0, state.textures.hero_1, state.textures.hero_2, state.textures.hero_3, state.textures.hero_4]);
-    item.sprite.animationSpeed = 0.4;
-    item.sprite.position.x = item.x * 50;
-    item.sprite.position.y = item.y * 50 - 20;
-    state.mapContainer.addChild(item.sprite);
-    dispatch(setPlayer({ ...level.player, sprite: item.sprite }));
 
     const exit = level.exit;
     exit.sprite = new PIXI.Sprite(state.textures.exit);
@@ -85,15 +78,6 @@ export default function initLevel(levelNumber) {
     dispatch(setGold(gold));
     dispatch(setTotalChests(level.gold.length));
 
-    let monsters = [];
-    level.monsters.forEach(item => {
-      item.sprite = new PIXI.Sprite(state.textures.monster);
-      item.sprite.position.x = item.x * 50;
-      item.sprite.position.y = item.y * 50 - 20;
-      state.mapContainer.addChild(item.sprite);
-      monsters.push({...item})
-    });
-    dispatch(setMonsters(monsters));
 
     let spells = [];
     level.spells.forEach(item => {
@@ -103,6 +87,24 @@ export default function initLevel(levelNumber) {
       state.mapContainer.addChild(item.sprite);
       spells.push({...item})
     });
+
+    const item = level.player;
+    item.sprite = new PIXI.extras.AnimatedSprite([state.textures.hero_0, state.textures.hero_1, state.textures.hero_2, state.textures.hero_3, state.textures.hero_4]);
+    item.sprite.animationSpeed = 0.4;
+    item.sprite.position.x = item.x * 50;
+    item.sprite.position.y = item.y * 50 - 20;
+    state.mapContainer.addChild(item.sprite);
+    dispatch(setPlayer({ ...level.player, sprite: item.sprite }));
+
+    let monsters = [];
+    level.monsters.forEach(item => {
+      item.sprite = new PIXI.Sprite(state.textures.monster);
+      item.sprite.position.x = item.x * 50;
+      item.sprite.position.y = item.y * 50 - 20;
+      state.mapContainer.addChild(item.sprite);
+      monsters.push({...item})
+    });
+    dispatch(setMonsters(monsters));
     dispatch(setSpells(spells));
 
     dispatch(setTextBlock(level.text));
