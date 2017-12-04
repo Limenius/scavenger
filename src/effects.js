@@ -1,7 +1,7 @@
-import { transformMapToGraph, getBlankMap, findPath } from "./map"
+import { transformMapToGraph, getBlankMap, findPath } from "./map";
 import { Map, compute } from "./fov";
 import * as PIXI from "pixi.js";
-import Constants from "./constants"
+import Constants from "./constants";
 
 const exitLevel = state => {
   const { player, exits, totalGold } = state;
@@ -41,45 +41,56 @@ const moveRandomly = (monster, state) => {
   const findNewTile = (monster, map) => {
     const newX = Math.floor(Math.random() * 3 - 1 + monster.x);
     const newY = Math.floor(Math.random() * 3 - 1 + monster.y);
-    if (map[newX][newY] === ".") {
+    if (map[newY][newX] === ".") {
       return { x: newX, y: newY };
     } else {
       return findNewTile(monster, map);
     }
   };
   const newCoords = findNewTile(monster, state.map);
-  monster.sprite.position.x = newCoords.x * 50;
-  monster.sprite.position.y = newCoords.y * 50;
-  return { ...monster, x: newCoords.x, y: newCoords.y };
+  return {
+    path: [{ x: monster.x, y: monster.y }, newCoords],
+    monster: { ...monster, x: newCoords.x, y: newCoords.y }
+  };
 };
 
 const inSmell = (monster, { smell }) =>
   smell.find(({ x, y }) => monster.x === x && monster.y === y);
 
-
 const moveToPlayer = (monster, state) => {
   const path = findPath(monster, state.player, state.map);
   if (Constants.MONSTER_MAX_MOVE < path.length) {
-      state.sound.play('bad');
+    state.sound.play("bad");
   } else {
-      state.sound.play('gameover');
+    state.sound.play("gameover");
   }
   const realPath = path.slice(0, Constants.MONSTER_MAX_MOVE);
   const lastNode = realPath[realPath.length - 1];
-  monster.sprite.position.x = lastNode.x * 50;
-  monster.sprite.position.y = lastNode.y * 50;
-  return { ...monster, x: lastNode.x, y: lastNode.y };
+  return {
+    path: [{ x: monster.x, y: monster.y }, ...realPath],
+    monster: { ...monster, x: lastNode.x, y: lastNode.y }
+  };
 };
 
 function moveMonsters(state) {
-  const monsters = state.monsters.map(monster => {
-    if (inSmell(monster, state)) {
-      return moveToPlayer(monster, state);
-    } else {
-      return moveRandomly(monster, state);
-    }
-  });
-  return { ...state, monsters };
+  const movements = state.monsters
+    .map(monster => {
+      if (inSmell(monster, state)) {
+        return moveToPlayer(monster, state);
+      } else {
+        return moveRandomly(monster, state);
+      }
+    })
+    .reduce(
+      ({ paths: prevPaths, monsters: prevMonsters }, { path, monster }) => {
+        return {
+          paths: [...prevPaths, path],
+          monsters: [...prevMonsters, monster]
+        };
+      },
+      { paths: [], monsters: [] }
+    );
+  return { paths: movements.paths, monsters: movements.monsters };
 }
 
 function renderFov(state, center) {
@@ -131,7 +142,6 @@ function renderSmell(state, center) {
 const flatten = list =>
   list.reduce((a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []);
 
-
 function renderTrajectory(state, end) {
   if (state.trajectory) {
     state.trajectory.forEach(node => state.mapContainer.removeChild(node));
@@ -149,4 +159,11 @@ function renderTrajectory(state, end) {
   });
 }
 
-export { exitLevel, pickGold, moveMonsters, renderFov, renderSmell, renderTrajectory };
+export {
+  exitLevel,
+  pickGold,
+  moveMonsters,
+  renderFov,
+  renderSmell,
+  renderTrajectory
+};

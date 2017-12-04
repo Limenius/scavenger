@@ -6,10 +6,10 @@ import reducer, {
   setApp,
   setTextures,
   mouseOver,
-  click,
   setSound,
   goNextLevel,
 } from "./reducer";
+import { click } from "./clickHandler";
 import { getMousePos, getMapCoord } from "./util";
 import { setupSidebar } from "./sidebar";
 import Sound from "./sound";
