@@ -52,14 +52,14 @@ const pickSpells = state => {
               ...state,
               spells,
               collectedSpells1: state.collectedSpells1 + 1,
-              smellRadius: 10
+              smellRadius: state.smellRadius * 0
             };
         case 2:
             return {
               ...state,
               spells,
               collectedSpells2: state.collectedSpells2 + 1,
-              smellRadius: state.smellRadius * 0
+              smellRadius: 10
             };
         default:
             return state;
