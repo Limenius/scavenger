@@ -240,6 +240,14 @@ function compute(map, position, vision_range) {
   compute_quadrant(map, position, vision_range, 1, -1);
   compute_quadrant(map, position, vision_range, -1, 1);
   compute_quadrant(map, position, vision_range, -1, -1);
+  for (let i = 0; i < map.tiles.length; i++) {
+    for (let j = 0; j < map.tiles[i].length; j++) {
+        if (Math.sqrt(Math.pow(i - position[0], 2) + Math.pow(j - position[1], 2)) > vision_range) {
+          map.tiles[i][j].visible = false;
+        }
+    }
+  }
+  console.log(map);
 }
 
 if (exports !== undefined) {
