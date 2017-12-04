@@ -93,9 +93,6 @@ const inSmell = (monster, { smell }) =>
 
 const moveToPlayer = (monster, state) => {
   const path = findPath(monster, state.player, state.map);
-  if (Constants.MONSTER_MAX_MOVE < path.length) {
-    state.sound.play("bad");
-  }
   const realPath = path.slice(0, Constants.MONSTER_MAX_MOVE);
   const lastNode = realPath[realPath.length - 1];
   return {
@@ -108,6 +105,7 @@ function moveMonsters(state) {
   const movements = state.monsters
     .map(monster => {
       if (inSmell(monster, state)) {
+        state.sound.play("bad");
         return moveToPlayer(monster, state);
       } else {
         return moveRandomly(monster, state);
