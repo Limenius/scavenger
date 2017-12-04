@@ -19,7 +19,19 @@ import {
   setCollected,
   goNextLevel
 } from "./reducer";
+import { compute, Map } from "./fov";
+import { transformMapToGraph } from "./map";
 
+function computeFov(map, center) {
+  const grid = new Map(transformMapToGraph(map));
+  console.log(grid)
+  compute(grid, [center.x, center.y], Constants.FOV_RADIUS);
+  return grid.tiles.map((column, idxY) => {
+    return column.map((tile, idxX) => {
+      return tile.visible;
+    });
+  });
+}
 
 // shameful
 export function click(coords) {
@@ -47,6 +59,9 @@ export function click(coords) {
       };
       const { paths, monsters } = moveMonsters(newState);
       const stateAfterMonsters = { ...newState, monsters };
+
+      const finalVisibility = computeFov(state.map, coords);
+
       new Promise(resolve => {
         dispatch(disableUI());
         const animator = createTranslatorPlayer(
@@ -58,8 +73,7 @@ export function click(coords) {
           resolve
         );
         state.app.ticker.add(animator);
-      })
-        .then(() => {
+      }).then((visibility) => {
           return new Promise(resolve => {
             const animators = paths.map((path, idx) => {
               return new Promise(resolve => {
@@ -67,6 +81,7 @@ export function click(coords) {
                   path,
                   newState.monsters[idx].sprite,
                   newState.app.ticker,
+                  finalVisibility,
                   resolve
                 );
                 newState.app.ticker.add(animator);
@@ -108,7 +123,6 @@ export function click(coords) {
           );
           renderFovImmediate(stateAfterSpells, coords);
           const smell = renderSmell(stateAfterSpells, coords);
-          console.log(smell)
           const stateAfterSmell = {...stateAfterSpells, smell};
 
           const hasFinished = exitLevel(stateAfterSmell);
