@@ -108,14 +108,15 @@ export function click(coords) {
           );
           renderFovImmediate(stateAfterSpells, coords);
           const smell = renderSmell(stateAfterSpells, coords);
+          console.log(smell)
+          const stateAfterSmell = {...stateAfterSpells, smell};
 
-          const hasFinished = exitLevel(stateAfterSpells);
+          const hasFinished = exitLevel(stateAfterSmell);
 
           dispatch(enableUI());
+          dispatch(setState(stateAfterSmell));
           if (hasFinished) {
             return dispatch(goNextLevel());
-          } else {
-            return dispatch(setState({ ...stateAfterSpells, smell }));
           }
         });
     } else {
