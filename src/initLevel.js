@@ -91,6 +91,16 @@ export default function initLevel(levelNumber) {
       state.mapContainer.addChild(item.sprite);
       monsters.push({...item})
     });
+
+    let spells = [];
+    level.spells.forEach(item => {
+      item.sprite = new PIXI.Sprite(state.textures['spell'+item.type]);
+      item.sprite.position.x = item.x * 50;
+      item.sprite.position.y = item.y * 50;
+      state.mapContainer.addChild(item.sprite);
+      spells.push({...item})
+    });
+
     dispatch(setMonsters(monsters));
     dispatch(setTextBlock(level.text));
     dispatch(setSmellRadius(0));

@@ -44,6 +44,12 @@ Click when you are ready to start`,
     exit: { x: 16, y: 7, sprite: null },
     gold: [
       { x: 17, y: 9, value: 1 },
+    ],
+    spells: [
+      { x: 13, y: 3, type: 1 },
+      { x: 14, y: 3, type: 2 },
+      { x: 15, y: 3, type: 3 },
+      { x: 16, y: 3, type: 4 },
     ]
   },
   {
@@ -178,7 +184,7 @@ Click when you are ready to start`,
 ******************************
 `,
     text: `Level 3.
-Some pyramids have more than one monster.
+Real pyramids have more than one monster.
 Sometimes more that one exit too.
 
 2 tresure chests.
@@ -232,7 +238,7 @@ and items that can help you.
 Use them wisely.
 
 3 tresure chests.
-Total gold in them: 6.
+Total gold in them: 4.
 Click when you are ready to start`,
     player: { x: 3, y: 3 },
     monsters: [{ x: 4, y: 5 }, { x: 6, y: 1 }],
@@ -240,7 +246,7 @@ Click when you are ready to start`,
     gold: [
       { x: 1, y: 4, value: 1 },
       { x: 8, y: 5, value: 2 },
-      { x: 12, y: 12, value: 3 }
+      { x: 12, y: 12, value: 1 }
     ]
   }
 ];
