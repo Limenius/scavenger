@@ -33,7 +33,7 @@ const levels = [
 When exploring pyramids, it is important to learn
 learn how to exit them.
 
-Find the stairs and exit the pyramid.
+Collect the treasure and exit the pyramid.
 
 1 tresure chest.
 Total gold in it: 1.
@@ -45,6 +45,7 @@ Click when you are ready to start`,
       { x: 15, y: 9, sprite: null }
     ],
     gold: [
+      { x: 9 , y: 4, value: 1 },
     ],
     spells: []
   },
@@ -97,7 +98,7 @@ Click when you are ready to start`,
       { x: 13, y: 7, sprite: null }
     ],
     gold: [
-      { x: 9 , y: 4, value: 1 },
+      { x: 10 , y: 3, value: 1 },
     ],
     spells: []
   },
@@ -282,14 +283,15 @@ Click when you are ready to start`,
 ************************
 `,
     text: `Level 5.
-Real pyramids have more than one monster.
-Sometimes more that one exit too.
+Real pyramids are big and full
+of monsters. Sometimes they have
+more that one exit.
 
 2 tresure chests.
 Total gold in them: 3.
 Click when you are ready to start`,
     player: { x: 7, y: 3 },
-    monsters: [{ x: 11, y: 14 }, { x: 16, y: 7 }],
+    monsters: [{ x: 4, y: 3 }, { x: 16, y: 5 }, { x: 11, y: 14 }, { x: 16, y: 7 }],
     exit: [
        { x: 5, y: 1, sprite: null },
        { x: 12, y: 10, sprite: null },
