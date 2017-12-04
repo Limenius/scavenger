@@ -43,23 +43,39 @@ export function setupSidebar() {
     textChest.y = 85;
     rectangle.addChild(textChest);
 
-    const spells = new PIXI.Sprite(state.textures.spell1);
-    spells.position.x = 1550;
-    spells.position.y = 110;
-    rectangle.addChild(spells);
+    const spells1 = new PIXI.Sprite(state.textures.spell1);
+    spells1.position.x = 1550;
+    spells1.position.y = 110;
+    rectangle.addChild(spells1);
 
-    const textSpells = new PIXI.Text("", {
+    const textSpells1 = new PIXI.Text("", {
       fontFamily: "Pixilator",
       fontSize: "30px",
       fill: 0xeeeeee,
       "text-align": "center"
     });
-    textSpells.anchor.set(0.5, 0.5);
-    textSpells.x = 1700;
-    textSpells.y = 135;
-    rectangle.addChild(textSpells);
+    textSpells1.anchor.set(0.5, 0.5);
+    textSpells1.x = 1700;
+    textSpells1.y = 135;
+    rectangle.addChild(textSpells1);
+
+    const spells2 = new PIXI.Sprite(state.textures.spell2);
+    spells2.position.x = 1550;
+    spells2.position.y = 160;
+    rectangle.addChild(spells2);
+
+    const textSpells2 = new PIXI.Text("", {
+      fontFamily: "Pixilator",
+      fontSize: "30px",
+      fill: 0xeeeeee,
+      "text-align": "center"
+    });
+    textSpells2.anchor.set(0.5, 0.5);
+    textSpells2.x = 1700;
+    textSpells2.y = 185;
+    rectangle.addChild(textSpells2);
 
     state.sidebarContainer.addChild(rectangle);
-    dispatch(setSidebar({chests: textChest, gold: textGold, spells: textSpells}))
+    dispatch(setSidebar({chests: textChest, gold: textGold, spells1: textSpells1, spells2: textSpells2}))
   };
 }

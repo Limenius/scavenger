@@ -46,12 +46,24 @@ const pickSpells = state => {
   if (index !== -1) {
     let spells = state.spells.slice(index + 1).concat(state.spells.slice(0, index));
     state.mapContainer.removeChild(state.spells[index].sprite);
-    return {
-      ...state,
-      spells,
-      collectedSpells1: state.collectedSpells1 + 1,
-      smellRadius: state.smellRadius * 2
-    };
+    switch (state.spells[index].type) {
+        case 1:
+            return {
+              ...state,
+              spells,
+              collectedSpells1: state.collectedSpells1 + 1,
+              smellRadius: state.smellRadius * 2
+            };
+        case 2:
+            return {
+              ...state,
+              spells,
+              collectedSpells2: state.collectedSpells2 + 1,
+              smellRadius: state.smellRadius * 0
+            };
+        default:
+            return state;
+    }
   } else {
     return state;
   }

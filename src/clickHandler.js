@@ -87,7 +87,8 @@ export function click(coords) {
             setCollected({
               chests: stateAfterGold.collectedChests,
               gold: stateAfterGold.collectedGold,
-              spells: stateAfterGold.collectedSpells1
+              spells1: stateAfterGold.collectedSpells1,
+              spells2: stateAfterGold.collectedSpells2
             })
           );
           renderFovImmediate(stateAfterGold, coords);
@@ -99,7 +100,8 @@ export function click(coords) {
             setCollected({
               chests: stateAfterSpells.collectedChests,
               gold: stateAfterSpells.collectedGold,
-              spells: stateAfterSpells.collectedSpells1
+              spells1: stateAfterSpells.collectedSpells1,
+              spells2: stateAfterSpells.collectedSpells2
             })
           );
 

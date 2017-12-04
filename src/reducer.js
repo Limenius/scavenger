@@ -58,6 +58,7 @@ const initialState = {
   collectedChests: 0,
   collectedGold: 0,
   collectedSpells1: 0,
+  collectedSpells2: 0,
 };
 
 const reducer = (state = initialState, action) => {
@@ -79,7 +80,7 @@ const reducer = (state = initialState, action) => {
     case SET_LEVEL:
       return { ...state, level: action.level };
     case SET_COLLECTED:
-      return { ...state, collectedGold: action.gold, collectedChests: action.chests, collectedSpells1: action.spells };
+      return { ...state, collectedGold: action.gold, collectedChests: action.chests, collectedSpells1: action.spells1, collectedSpells2: action.spells2 };
     case SET_APP:
       return { ...state, app: action.app };
     case SET_KILLED:
@@ -287,20 +288,21 @@ export function enableUI() {
   return { type: ENABLE_UI };
 }
 
-export function setCollected({ gold, chests, spells }) {
+export function setCollected({ gold, chests, spells1, spells2 }) {
   return (dispatch, state) => {
-    dispatch({ type: SET_COLLECTED, gold, chests, spells });
-    dispatch(setSidebarValues({ gold, chests, spells }));
+    dispatch({ type: SET_COLLECTED, gold, chests, spells1, spells2 });
+    dispatch(setSidebarValues({ gold, chests, spells1, spells2 }));
   };
 }
 
-export function setSidebarValues({ chests, gold, spells }) {
+export function setSidebarValues({ chests, gold, spells1, spells2 }) {
   return (dispatch, state) => {
     const totalGold = state.totalGold;
     const totalChests = state.totalChests;
     state.sidebar.chests.text = `${chests}/${totalChests}`;
     state.sidebar.gold.text = `${gold}/${totalGold}`;
-    state.sidebar.spells.text = `${spells}`;
+    state.sidebar.spells1.text = `${spells1}`;
+    state.sidebar.spells2.text = `${spells2}`;
   };
 }
 
