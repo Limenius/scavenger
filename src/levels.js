@@ -40,7 +40,7 @@ Total gold in it: 1.
 
 Click when you are ready to start`,
     player: { x: 9, y: 2 },
-    monsters: [],
+    monsters: [{ x: 11, y: 7 }],
     exit: { x: 13, y: 7, sprite: null },
     gold: [
       { x: 9, y: 3, value: 1 },
