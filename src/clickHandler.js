@@ -24,7 +24,6 @@ import { transformMapToGraph } from "./map";
 
 function computeFov(map, center) {
   const grid = new Map(transformMapToGraph(map));
-  console.log(grid)
   compute(grid, [center.x, center.y], Constants.FOV_RADIUS);
   return grid.tiles.map((column, idxY) => {
     return column.map((tile, idxX) => {
