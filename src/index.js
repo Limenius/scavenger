@@ -86,8 +86,8 @@ function mouseClick(event, store) {
 }
 
 function onLoadResources(loader, resources, store) {
-  const chars = ["hero_0", "hero_1", "hero_2", "hero_3", "hero_4", "monster"];
-  const items = ["floor", "wall", "gold", "selectedTile", "smell", "exit", "chest", "spell1", "spell2", "spell3", "spell4"];
+  const chars = ["hero_0", "hero_1", "hero_2", "hero_3", "hero_4", "monster", "wall"];
+  const items = ["floor", "gold", "selectedTile", "smell", "exit", "chest", "spell1", "spell2", "spell3", "spell4"];
   const textures = items.reduce((acc, name) => {
     acc[name] = new PIXI.Texture(
       resources[name].texture,

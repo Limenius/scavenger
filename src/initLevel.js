@@ -43,15 +43,17 @@ export default function initLevel(levelNumber) {
         switch (tileChar) {
           case ".":
             tile = new PIXI.Sprite(state.textures.floor);
+            tile.position.x = column * 50;
+            tile.position.y = idx * 50;
             break;
           case "*":
             tile = new PIXI.Sprite(state.textures.wall);
+            tile.position.x = column * 50;
+            tile.position.y = idx * 50 - 20;
             break;
           default:
             throw new Error(`Unrecognized tile char ${tileChar}`);
         }
-        tile.position.x = column * 50;
-        tile.position.y = idx * 50;
         state.mapContainer.addChild(tile);
         return tile;
       });
