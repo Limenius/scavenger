@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import initLevel from "./initLevel";
-import { renderFov, renderTrajectory, renderSmell } from "./effects"
+import { renderFovImmediate, renderTrajectory, renderSmell } from "./effects"
 
 const SET_APP = "SET_APP";
 const SET_MAP_CONTAINER = "SET_MAP_CONTAINER";
@@ -134,15 +134,13 @@ const reducer = (state = initialState, action) => {
         return { ...state, trajectory };
       }
     case COMPUTE_FOV:
-      renderFov(state, state.player);
+      renderFovImmediate(state, state.player);
       const smell = renderSmell(state, state.player);
       return { ...state, smell };
     default:
       return state;
   }
 };
-
-
 
 export function setApp(app) {
   return { type: SET_APP, app };
