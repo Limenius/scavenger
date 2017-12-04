@@ -95,7 +95,6 @@ export function click(coords) {
             })
           );
           renderFovImmediate(stateAfterGold, coords);
-          const smell = renderSmell(stateAfterGold, coords);
 
           const stateAfterSpells = pickSpells(stateAfterGold);
           // can do this one because it is only side effects.
@@ -107,6 +106,8 @@ export function click(coords) {
               spells2: stateAfterSpells.collectedSpells2
             })
           );
+          renderFovImmediate(stateAfterSpells, coords);
+          const smell = renderSmell(stateAfterSpells, coords);
 
           const hasFinished = exitLevel(stateAfterSpells);
 
