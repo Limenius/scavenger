@@ -1,11 +1,11 @@
 import {
-  renderFov,
   exitLevel,
   pickGold,
   moveMonsters,
-  renderSmell
+  renderSmell,
+  renderFovImmediate
 } from "./effects";
-import { createTranslator } from "./translator";
+import { createTranslator, createTranslatorPlayer } from "./translator";
 import { findPath } from "./map";
 import Constants from "./constants";
 import {
@@ -18,6 +18,7 @@ import {
   setCollected,
   goNextLevel
 } from "./reducer";
+
 
 // shameful
 export function click(coords) {
@@ -44,14 +45,17 @@ export function click(coords) {
       const stateAfterMonsters = { ...newState, monsters };
       new Promise(resolve => {
         dispatch(disableUI());
-        const animator = createTranslator(
+        const animator = createTranslatorPlayer(
           path,
           state.player.sprite,
           state.app.ticker,
+          state.map,
+          state.tiles,
           resolve
         );
         state.app.ticker.add(animator);
-      }).then(() => {
+      })
+        .then(() => {
           return new Promise(resolve => {
             const animators = paths.map((path, idx) => {
               return new Promise(resolve => {
@@ -65,8 +69,8 @@ export function click(coords) {
               });
             });
             Promise.all(animators).then(() => {
-              renderFov(newState, coords);
-              resolve()
+              renderFovImmediate(newState, coords);
+              resolve();
             });
           });
         })
@@ -84,7 +88,7 @@ export function click(coords) {
               gold: stateAfterGold.collectedGold
             })
           );
-          renderFov(stateAfterGold, coords);
+          renderFovImmediate(stateAfterGold, coords);
           const smell = renderSmell(stateAfterGold, coords);
           const hasFinished = exitLevel(stateAfterGold);
           dispatch(enableUI());

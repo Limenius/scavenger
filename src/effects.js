@@ -1,5 +1,6 @@
 import { transformMapToGraph, getBlankMap, findPath } from "./map";
 import { Map, compute } from "./fov";
+import { flatten } from "./util";
 import * as PIXI from "pixi.js";
 import Constants from "./constants";
 
@@ -91,12 +92,13 @@ function moveMonsters(state) {
   return { paths: movements.paths, monsters: movements.monsters };
 }
 
-function renderFov(state, center) {
+
+function renderFovImmediate(state, center) {
   const grid = new Map(transformMapToGraph(state.map));
   compute(grid, [center.x, center.y], Constants.FOV_RADIUS);
   grid.tiles.forEach((column, idxY) => {
     column.forEach((tile, idxX) => {
-      state.tiles[idxX][idxY].visible = tile.visible;
+      state.tiles[idxX][idxY].alpha = tile.visible ? 1: 0;
       state.monsters.forEach(monster => {
         if (monster.y === idxX && monster.x === idxY) {
           monster.sprite.visible = tile.visible;
@@ -137,9 +139,6 @@ function renderSmell(state, center) {
   return flatten(sprites).filter(sp => sp !== null);
 }
 
-const flatten = list =>
-  list.reduce((a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []);
-
 function renderTrajectory(state, end) {
   if (state.trajectory) {
     state.trajectory.forEach(node => state.mapContainer.removeChild(node));
@@ -161,7 +160,7 @@ export {
   exitLevel,
   pickGold,
   moveMonsters,
-  renderFov,
+  renderFovImmediate,
   renderSmell,
   renderTrajectory
 };

@@ -7,3 +7,7 @@ export function getMousePos(evt) {
   var rect = canvas.getBoundingClientRect();
   return { x: evt.clientX - rect.left, y: evt.clientY - rect.top };
 }
+
+export function flatten(list) {
+  return list.reduce((a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []);
+}
