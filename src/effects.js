@@ -9,7 +9,7 @@ const exitLevel = state => {
   let hasFinished = false;
   exits.forEach(exit => {
     if (player.x === exit.x && player.y === exit.y) {
-      if (state.smellRadius === totalGold) {
+      if (state.gold.length === 0) {
         state.sound.play("lvlup");
         hasFinished = true;
       }
@@ -26,6 +26,7 @@ const pickGold = state => {
   if (index !== -1) {
     let gold = state.gold.slice(index + 1).concat(state.gold.slice(0, index));
     state.mapContainer.removeChild(state.gold[index].sprite);
+    state.sound.play("coins");
     return {
       ...state,
       gold,
@@ -46,6 +47,7 @@ const pickSpells = state => {
   if (index !== -1) {
     let spells = state.spells.slice(index + 1).concat(state.spells.slice(0, index));
     state.mapContainer.removeChild(state.spells[index].sprite);
+    state.sound.play("blub");
     switch (state.spells[index].type) {
         case 1:
             return {
@@ -91,9 +93,6 @@ const inSmell = (monster, { smell }) =>
 
 const moveToPlayer = (monster, state) => {
   const path = findPath(monster, state.player, state.map);
-  if (Constants.MONSTER_MAX_MOVE < path.length) {
-    state.sound.play("bad");
-  }
   const realPath = path.slice(0, Constants.MONSTER_MAX_MOVE);
   const lastNode = realPath[realPath.length - 1];
   return {
@@ -106,6 +105,7 @@ function moveMonsters(state) {
   const movements = state.monsters
     .map(monster => {
       if (inSmell(monster, state)) {
+        state.sound.play("bad");
         return moveToPlayer(monster, state);
       } else {
         return moveRandomly(monster, state);

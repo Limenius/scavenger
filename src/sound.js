@@ -53,6 +53,14 @@ export default class Sound {
             resolve();
           }
         }),
+        coins: new Howl({
+          src: ["./sounds/coins.wav"],
+          loop: false,
+          volume: 1,
+          onload: function() {
+            resolve();
+          }
+        }),
       };
     });
   }
