@@ -40,7 +40,7 @@ Sometimes more that one exit too.
 Total gold in them: 3.
 Click when you are ready to start`,
     player: { x: 11, y: 13 },
-    monsters: [{ x: 11, y: 17 }, { x: 16, y: 11 }],
+    monsters: [{ x: 4, y: 4 }, { x: 16, y: 11 }],
     exit: [
           { x: 13, y: 14, sprite: null },
           { x: 12, y: 15, sprite: null },
