@@ -88,8 +88,9 @@ const moveRandomly = (monster, state) => {
   };
 };
 
-const inSmell = (monster, { smell }) =>
-  smell.find(({ x, y }) => monster.x === x && monster.y === y);
+export function inSmell(monster, { smell }) {
+  return smell.find(({ x, y }) => monster.x === x && monster.y === y);
+}
 
 const moveToPlayer = (monster, state) => {
   const path = findPath(monster, state.player, state.map);
@@ -105,7 +106,6 @@ function moveMonsters(state) {
   const movements = state.monsters
     .map(monster => {
       if (inSmell(monster, state)) {
-        state.sound.play("bad");
         return moveToPlayer(monster, state);
       } else {
         return moveRandomly(monster, state);

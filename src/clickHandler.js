@@ -4,6 +4,7 @@ import {
   pickSpells,
   moveMonsters,
   renderSmell,
+  inSmell,
   renderFovImmediate
 } from "./effects";
 import { createTranslator, createTranslatorPlayer } from "./translator";
@@ -93,7 +94,7 @@ export function click(coords) {
               });
             });
             Promise.all(animators).then(() => {
-              const visibility = renderFovImmediate(newState, coords);
+              renderFovImmediate(newState, coords);
               resolve();
             });
           });
@@ -104,6 +105,7 @@ export function click(coords) {
             dispatch(enableUI());
             return dispatch(killed());
           }
+
           const stateAfterGold = pickGold(stateAfterMonsters);
           // can do this one because it is only side effects.
           dispatch(
@@ -144,6 +146,11 @@ export function click(coords) {
           const stateAfterVisited = {...stateAfterSpells, visible: [...stateAfterSpells.visible, ...visible]};
           const smell = renderSmell(stateAfterVisited, coords);
           const stateAfterSmell = {...stateAfterVisited, smell};
+          stateAfterSmell.monsters.forEach(monster => {
+            if (inSmell(monster, stateAfterSmell)) {
+              state.sound.play("bad");
+            }
+          });
 
           const hasFinished = exitLevel(stateAfterSmell);
 
