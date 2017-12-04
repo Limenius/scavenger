@@ -44,7 +44,6 @@ Click when you are ready to start`,
     exit: { x: 13, y: 7, sprite: null },
     gold: [
       { x: 9, y: 3, value: 1 },
-      { x: 14, y: 9, value: 1 },
     ],
     spells: []
   },
