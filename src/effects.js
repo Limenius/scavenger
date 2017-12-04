@@ -38,6 +38,25 @@ const pickGold = state => {
   }
 };
 
+const pickSpells = state => {
+  const index = state.spells.findIndex(({ x, y }) => {
+    return x === state.player.x && y === state.player.y;
+  });
+
+  if (index !== -1) {
+    let spells = state.spells.slice(index + 1).concat(state.spells.slice(0, index));
+    state.mapContainer.removeChild(state.spells[index].sprite);
+    return {
+      ...state,
+      spells,
+      collectedSpells1: state.collectedSpells1 + 1,
+      smellRadius: state.smellRadius * 2
+    };
+  } else {
+    return state;
+  }
+};
+
 const moveRandomly = (monster, state) => {
   const findNewTile = (monster, map) => {
     const newX = Math.floor(Math.random() * 3 - 1 + monster.x);
@@ -159,6 +178,7 @@ function renderTrajectory(state, end) {
 export {
   exitLevel,
   pickGold,
+  pickSpells,
   moveMonsters,
   renderFovImmediate,
   renderSmell,

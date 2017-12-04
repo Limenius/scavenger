@@ -16,6 +16,7 @@ const COMPUTE_FOV = "COMPUTE_FOV";
 const SET_STATE = "SET_STATE";
 const SET_PLAYER = "SET_PLAYER";
 const SET_GOLD = "SET_GOLD";
+const SET_SPELLS = "SET_SPELLS";
 const SET_TOTAL_GOLD = "SET_TOTAL_GOLD";
 const SET_TOTAL_CHESTS = "SET_TOTAL_CHESTS";
 const SET_MONSTERS = "SET_MONSTERS";
@@ -43,6 +44,7 @@ const initialState = {
   monsters: null,
   exits: null,
   gold: null,
+  spells: null,
   sprites: {},
   textures: {},
   gameState: {},
@@ -55,6 +57,7 @@ const initialState = {
   killed: false,
   collectedChests: 0,
   collectedGold: 0,
+  collectedSpells1: 0,
 };
 
 const reducer = (state = initialState, action) => {
@@ -76,7 +79,7 @@ const reducer = (state = initialState, action) => {
     case SET_LEVEL:
       return { ...state, level: action.level };
     case SET_COLLECTED:
-      return { ...state, collectedGold: action.gold, collectedChests: action.chests };
+      return { ...state, collectedGold: action.gold, collectedChests: action.chests, collectedSpells1: action.spells };
     case SET_APP:
       return { ...state, app: action.app };
     case SET_KILLED:
@@ -93,6 +96,8 @@ const reducer = (state = initialState, action) => {
       return { ...state, monsters: action.monsters };
     case SET_GOLD:
       return { ...state, gold: action.gold };
+    case SET_SPELLS:
+      return { ...state, spells: action.spells };
     case SET_SCROLL:
       return { ...state, scroll: { x: action.x, y: action.y } };
     case SET_TOTAL_CHESTS:
@@ -234,6 +239,10 @@ export function setGold(gold) {
   return { type: SET_GOLD, gold };
 }
 
+export function setSpells(spells) {
+  return { type: SET_SPELLS, spells };
+}
+
 export function setMonsters(monsters) {
   return { type: SET_MONSTERS, monsters };
 }
@@ -278,9 +287,9 @@ export function enableUI() {
   return { type: ENABLE_UI };
 }
 
-export function setCollected({ gold, chests }) {
+export function setCollected({ gold, chests, spells }) {
   return (dispatch, state) => {
-    dispatch({ type: SET_COLLECTED, gold, chests });
+    dispatch({ type: SET_COLLECTED, gold, chests, spells });
     dispatch(setSidebarValues({ gold, chests }));
   };
 }

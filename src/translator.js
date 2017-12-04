@@ -57,14 +57,12 @@ const getVisibilityFromChanges = changes => changes.map(row => row.map(change =>
 
 function* runnerPlayer(sprite, trajectory, ticker, map, tiles) {
   let visibility = gatherVisibility(tiles);
-  console.log(visibility);
   const steps = trajectory.reduce((acc, curr, idx) => {
     if (idx === 0) {
       return [];
     }
     const changes = fovChanges(map, visibility, trajectory[idx]);
     visibility = transpose(getVisibilityFromChanges(changes));
-    console.log(visibility);
     acc.push(() =>
       runnerOneStepPlayer(
         sprite,
