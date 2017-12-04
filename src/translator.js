@@ -68,8 +68,8 @@ function* runnerPlayer(sprite, trajectory, ticker, map, tiles) {
     acc.push(() =>
       runnerOneStepPlayer(
         sprite,
-        { x: trajectory[idx - 1].x * 50, y: trajectory[idx - 1].y * 50 },
-        { x: curr.x * 50, y: curr.y * 50 },
+        { x: trajectory[idx - 1].x * 50, y: trajectory[idx - 1].y * 50 - 20},
+        { x: curr.x * 50, y: curr.y * 50 - 20},
         flatten(changes).filter(({from, to}) => from !== to),
         tiles,
       )

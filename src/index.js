@@ -32,6 +32,11 @@ function loadGraphics() {
       .add("tile", "./img/tile.png")
       .add("wall", "./img/wall.png")
       .add("player", "./img/player.png")
+      .add("hero_0", "./img/hero_0.png")
+      .add("hero_1", "./img/hero_1.png")
+      .add("hero_2", "./img/hero_2.png")
+      .add("hero_3", "./img/hero_3.png")
+      .add("hero_4", "./img/hero_4.png")
       .add("monster", "./img/monster.png")
       .add("gold", "./img/gold.png")
       .add("selectedTile", "./img/selectedTile.png")
@@ -81,7 +86,8 @@ function mouseClick(event, store) {
 }
 
 function onLoadResources(loader, resources, store) {
-  const items = ["tile", "wall", "player", "monster", "gold", "selectedTile", "smell", "exit", "chest", "spell1", "spell2", "spell3", "spell4"];
+  const chars = ["hero_0", "hero_1", "hero_2", "hero_3", "hero_4"];
+  const items = ["tile", "wall", "monster", "gold", "selectedTile", "smell", "exit", "chest", "spell1", "spell2", "spell3", "spell4"];
   const textures = items.reduce((acc, name) => {
     acc[name] = new PIXI.Texture(
       resources[name].texture,
@@ -89,7 +95,14 @@ function onLoadResources(loader, resources, store) {
     );
     return acc;
   }, {});
-  store.dispatch(setTextures(textures))
+  const charTextures = chars.reduce((acc, name) => {
+    acc[name] = new PIXI.Texture(
+      resources[name].texture,
+      new PIXI.Rectangle(0, 0, 50, 70)
+    );
+    return acc;
+  }, {});
+  store.dispatch(setTextures({...textures, ...charTextures}))
   store.dispatch(setupSidebar());
   store.dispatch(goNextLevel());
 }
