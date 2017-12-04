@@ -40,7 +40,7 @@ Total gold in it: 1.
 
 Click when you are ready to start`,
     player: { x: 9, y: 2 },
-    monsters: [{ x: 11, y: 7 }],
+    monsters: [],
     exit: [
       { x: 13, y: 7, sprite: null }
     ],
@@ -145,10 +145,10 @@ Click when you are ready to start`,
     player: { x: 9, y: 2 },
     monsters: [{ x: 11, y: 7 }],
     exit: [
-      { x: 7, y: 2, sprite: null }
+      { x: 7, y: 7, sprite: null }
     ],
     gold: [
-      { x: 8, y: 4, value: 2 },
+      { x: 15, y: 4, value: 2 },
     ],
     spells: []
   },
@@ -196,10 +196,10 @@ Click when you are ready to start`,
     player: { x: 15, y: 3 },
     monsters: [{ x: 12, y: 1 }],
     exit: [
-      { x: 7, y: 3, sprite: null }
+      { x: 7, y: 7, sprite: null }
     ],
     gold: [
-      { x: 12, y: 3, value: 2 },
+      { x: 12, y: 3, value: 3 },
     ],
     spells: []
   },
@@ -207,7 +207,7 @@ Click when you are ready to start`,
     map: `
 ************************
 ******...........*******
-**********.*************
+******...........*******
 ******...........*******
 ******...........*******
 ******...........*******
@@ -237,9 +237,9 @@ Click when you are ready to start`,
 ************************
 `,
     text: `Level 4.
-You were born to seek treasures in scary pyramids.
-You would never scape a pyramid before finding
-all every treasure in it first.
+You love finding treasures in scary pyramids.
+You would never scape a pyramid before
+finding every treasure in it first.
 
 Collect all treasures and exit the pyramid.
 
@@ -254,7 +254,7 @@ Click when you are ready to start`,
     ],
     gold: [
       { x: 8, y: 4, value: 2 },
-      { x: 13, y: 10, value: 1 }
+      { x: 13, y: 9, value: 1 }
     ],
     spells: []
   },
