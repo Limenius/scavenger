@@ -12,38 +12,38 @@ export function setupSidebar() {
     rectangle.drawRect(1500, 0, 300, 1800);
 
     const gold = new PIXI.Sprite(state.textures.gold);
-    gold.position.x = 1510;
+    gold.position.x = 1550;
     gold.position.y = 10;
     rectangle.addChild(gold);
 
-    const sprite = new PIXI.Text("", {
+    const textGold = new PIXI.Text("", {
       fontFamily: "Pixilator",
-      fontSize: "18px",
+      fontSize: "30px",
       fill: 0xeeeeee,
       "text-align": "center"
     });
-    sprite.anchor.set(0.5, 0.5);
-    sprite.x = 1560;
-    sprite.y = 10;
-    rectangle.addChild(sprite);
+    textGold.anchor.set(0.5, 0.5);
+    textGold.x = 1700;
+    textGold.y = 35;
+    rectangle.addChild(textGold);
 
     const chest = new PIXI.Sprite(state.textures.chest);
-    chest.position.x = 1510;
+    chest.position.x = 1550;
     chest.position.y = 60;
     rectangle.addChild(chest);
 
     const textChest = new PIXI.Text("", {
       fontFamily: "Pixilator",
-      fontSize: "18px",
+      fontSize: "30px",
       fill: 0xeeeeee,
       "text-align": "center"
     });
     textChest.anchor.set(0.5, 0.5);
-    textChest.x = 1560;
-    textChest.y = 60;
+    textChest.x = 1700;
+    textChest.y = 85;
     rectangle.addChild(textChest);
 
     state.sidebarContainer.addChild(rectangle);
-    dispatch(setSidebar({chests: textChest, gold: sprite}))
+    dispatch(setSidebar({chests: textChest, gold: textGold}))
   };
 }
