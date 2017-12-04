@@ -37,8 +37,8 @@ const levels = [
 2 tresure chests.
 Total gold in them: 3.
 Click when you are ready to start`,
-    player: { x: 27, y: 3 },
-    monsters: [{ x: 4, y: 5 }, { x: 26, y: 8 }],
+    player: { x: 6, y: 6 },
+    monsters: [{ x: 4, y: 5 }, { x: 3, y: 2 }],
     exit: { x: 6, y: 6, sprite: null },
     gold: [
       { x: 24, y: 5, value: 1 },

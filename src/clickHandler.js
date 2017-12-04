@@ -36,7 +36,13 @@ export function click(coords) {
     }
     const path = findPath(state.player, coords, state.map);
     if (path.length > 0 && path[path.length - 1].g <= Constants.MAX_MOVE) {
-      const movement = new Promise(resolve => {
+      const newState = {
+        ...state,
+        player: { ...state.player, x: coords.x, y: coords.y }
+      };
+      const { paths, monsters } = moveMonsters(newState);
+      const stateAfterMonsters = { ...newState, monsters };
+      new Promise(resolve => {
         dispatch(disableUI());
         const animator = createTranslator(
           path,
@@ -46,31 +52,47 @@ export function click(coords) {
         );
         state.app.ticker.add(animator);
       }).then(() => {
-        const newState = {
-          ...state,
-          player: { ...state.player, x: coords.x, y: coords.y }
-        };
-        renderFov(newState, coords);
-        const st = moveMonsters(newState);
-        if (monstersKillPlayer(st)) {
-          st.sound.play("lvlup");
-          return dispatch(killed());
-        }
-        const st2 = pickGold(st);
-        // can do this one because it is only side effects.
-        dispatch(
-          setCollected({ chests: st2.collectedChests, gold: st2.collectedGold })
-        );
-        renderFov(st2, coords);
-        const smell = renderSmell(st2, coords);
-        const hasFinished = exitLevel(st2);
-        dispatch(enableUI());
-        if (hasFinished) {
-          return dispatch(goNextLevel());
-        } else {
-          return dispatch(setState({ ...st2, smell }));
-        }
-      });
+          return new Promise(resolve => {
+            const animators = paths.map((path, idx) => {
+              return new Promise(resolve => {
+                const animator = createTranslator(
+                  path,
+                  newState.monsters[idx].sprite,
+                  newState.app.ticker,
+                  resolve
+                );
+                newState.app.ticker.add(animator);
+              });
+            });
+            Promise.all(animators).then(() => {
+              renderFov(newState, coords);
+              resolve()
+            });
+          });
+        })
+        .then(() => {
+          if (monstersKillPlayer(stateAfterMonsters)) {
+            stateAfterMonsters.sound.play("lvlup");
+            return dispatch(killed());
+          }
+          const stateAfterGold = pickGold(stateAfterMonsters);
+          // can do this one because it is only side effects.
+          dispatch(
+            setCollected({
+              chests: stateAfterGold.collectedChests,
+              gold: stateAfterGold.collectedGold
+            })
+          );
+          renderFov(stateAfterGold, coords);
+          const smell = renderSmell(stateAfterGold, coords);
+          const hasFinished = exitLevel(stateAfterGold);
+          dispatch(enableUI());
+          if (hasFinished) {
+            return dispatch(goNextLevel());
+          } else {
+            return dispatch(setState({ ...stateAfterGold, smell }));
+          }
+        });
     } else {
       return dispatch(setState(state));
     }
