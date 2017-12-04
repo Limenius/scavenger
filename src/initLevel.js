@@ -89,7 +89,7 @@ export default function initLevel(levelNumber) {
     level.monsters.forEach(item => {
       item.sprite = new PIXI.Sprite(state.textures.monster);
       item.sprite.position.x = item.x * 50;
-      item.sprite.position.y = item.y * 50;
+      item.sprite.position.y = item.y * 50 - 20;
       state.mapContainer.addChild(item.sprite);
       monsters.push({...item})
     });
