@@ -63,15 +63,15 @@ export default function initLevel(levelNumber) {
 
     dispatch(setTiles(tiles));
 
-    let exit = [];
+    let exits = [];
     level.exit.forEach(item => {
       item.sprite = new PIXI.Sprite(state.textures.exit);
       item.sprite.position.x = item.x * 50;
       item.sprite.position.y = item.y * 50;
       state.mapContainer.addChild(item.sprite);
-      exit.push({...item})
+      exits.push({...item})
     });
-    dispatch(setExits([{...exit }]));
+    dispatch(setExits(exits));
 
     let gold = [];
     level.gold.forEach(item => {
