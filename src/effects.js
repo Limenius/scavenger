@@ -26,6 +26,7 @@ const pickGold = state => {
   if (index !== -1) {
     let gold = state.gold.slice(index + 1).concat(state.gold.slice(0, index));
     state.mapContainer.removeChild(state.gold[index].sprite);
+    state.sound.play("coins");
     return {
       ...state,
       gold,
@@ -46,6 +47,7 @@ const pickSpells = state => {
   if (index !== -1) {
     let spells = state.spells.slice(index + 1).concat(state.spells.slice(0, index));
     state.mapContainer.removeChild(state.spells[index].sprite);
+    state.sound.play("blub");
     switch (state.spells[index].type) {
         case 1:
             return {
