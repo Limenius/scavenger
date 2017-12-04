@@ -73,6 +73,7 @@ export function click(coords) {
         .then(() => {
           if (monstersKillPlayer(stateAfterMonsters)) {
             stateAfterMonsters.sound.play("gameover");
+            dispatch(enableUI());
             return dispatch(killed());
           }
           const stateAfterGold = pickGold(stateAfterMonsters);
