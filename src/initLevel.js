@@ -37,6 +37,7 @@ export default function initLevel(levelNumber) {
     const level = levels[levelNumber];
     const rows = prepareMap(level.map);
     dispatch(setMap(rows));
+    let wallTiles = [];
     const tiles = rows.map((row, idx) => {
       return row.map((tileChar, column) => {
         let tile;
@@ -45,16 +46,17 @@ export default function initLevel(levelNumber) {
             tile = new PIXI.Sprite(state.textures.floor);
             tile.position.x = column * 50;
             tile.position.y = idx * 50;
+            state.mapContainer.addChild(tile);
             break;
           case "*":
             tile = new PIXI.Sprite(state.textures.wall);
             tile.position.x = column * 50;
             tile.position.y = idx * 50 - 20;
+            wallTiles.push(tile);
             break;
           default:
             throw new Error(`Unrecognized tile char ${tileChar}`);
         }
-        state.mapContainer.addChild(tile);
         return tile;
       });
     });
@@ -106,6 +108,8 @@ export default function initLevel(levelNumber) {
       state.mapContainer.addChild(item.sprite);
       monsters.push({...item})
     });
+
+    wallTiles.forEach(tile => state.mapContainer.addChild(tile));
     dispatch(setMonsters(monsters));
     dispatch(setSpells(spells));
 
