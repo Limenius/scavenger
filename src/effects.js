@@ -9,7 +9,7 @@ const exitLevel = state => {
   let hasFinished = false;
   exits.forEach(exit => {
     if (player.x === exit.x && player.y === exit.y) {
-      if (state.smellRadius === totalGold) {
+      if (state.gold.length === 0) {
         state.sound.play("lvlup");
         hasFinished = true;
       }

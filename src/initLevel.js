@@ -71,7 +71,6 @@ export default function initLevel(levelNumber) {
       state.mapContainer.addChild(item.sprite);
       exits.push({...item})
     });
-    dispatch(setExits(exits));
 
     let gold = [];
     level.gold.forEach(item => {
@@ -114,7 +113,7 @@ export default function initLevel(levelNumber) {
     wallTiles.forEach(tile => state.mapContainer.addChild(tile));
     dispatch(setMonsters(monsters));
     dispatch(setSpells(spells));
-
+    dispatch(setExits(exits));
     dispatch(setTextBlock(level.text));
     dispatch(setSmellRadius(0));
     dispatch(setLevel(levelNumber));

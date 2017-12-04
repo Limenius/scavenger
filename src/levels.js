@@ -88,7 +88,7 @@ a very good nose for adventures carrying gold.
 Avoid them getting near you.
 
 1 tresure chest.
-Total gold in it: 1.
+Total gold in it: 2.
 
 Click when you are ready to start`,
     player: { x: 9, y: 2 },
@@ -97,7 +97,7 @@ Click when you are ready to start`,
       { x: 13, y: 7, sprite: null }
     ],
     gold: [
-      { x: 9, y: 4, value: 1 }
+      { x: 9, y: 4, value: 2 }
     ],
     spells: []
   },
@@ -148,7 +148,7 @@ Click when you are ready to start`,
       { x: 7, y: 7, sprite: null }
     ],
     gold: [
-      { x: 15, y: 4, value: 2 },
+      { x: 15, y: 4, value: 3 },
     ],
     spells: []
   },
@@ -261,6 +261,62 @@ Click when you are ready to start`,
   {
     map: `
 ************************
+*.........*............*
+*.........*............*
+*.........*............*
+*......................*
+*.........*............*
+*.........*............*
+*.........*............*
+***********............*
+************************
+************************
+************************
+************************
+************************
+************************
+************************
+************************
+************************
+************************
+************************
+************************
+************************
+************************
+************************
+************************
+************************
+************************
+************************
+************************
+************************
+************************
+`,
+    text: `Level 7.
+Green spells will attract monsters in a
+wide radius. Use them wisely.
+
+3 tresure chests.
+Total gold in them: 4.
+Click when you are ready to start`,
+    player: { x: 13, y: 4 },
+    monsters: [{ x: 5, y: 5 }, { x: 6, y: 6 }],
+    exit: [
+      { x: 3, y: 6, sprite: null }
+    ],
+    gold: [
+      { x: 2, y: 4, value: 1 },
+      { x: 5, y: 5, value: 2 },
+      { x: 3, y: 1, value: 1 }
+    ],
+    spells: [
+      { x: 12, y: 6, type: 1 },
+      { x: 11, y: 6, type: 2 },
+    ]
+  },
+  {
+    map: `
+************************
 ************************
 ************************
 ************************
@@ -302,7 +358,7 @@ Click when you are ready to start`,
     monsters: [{ x: 11, y: 17 }, { x: 16, y: 11 }],
     exit: [
        { x: 5, y: 5, sprite: null },
-       { x: 12, y: 15, sprite: null },
+       { x: 12, y: 14, sprite: null },
     ],
     gold: [
       { x: 11, y: 15, value: 1 },
@@ -400,9 +456,10 @@ Click when you are ready to start`,
 ************************
 ************************
 `,
-    text: `Level 7.
-Green spells will attract monsters in a
-wide radius. Use them wisely.
+    text: `Level 8.
+Pyramids can be quite complicated.
+Be wise and explore while you can
+still pass unnoticed.
 
 3 tresure chests.
 Total gold in them: 4.
