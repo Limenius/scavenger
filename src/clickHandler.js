@@ -27,6 +27,9 @@ export function click(coords) {
     if (!state.uiEnabled) {
       return;
     }
+    if (state.trajectory) {
+      state.trajectory.forEach(node => state.mapContainer.removeChild(node));
+    }
     if (state.killed) {
       state.mapContainer.removeChild(state.textBlock.rectangle);
       dispatch(removeTextBlock());
@@ -40,7 +43,7 @@ export function click(coords) {
     if (path.length > 0 && path[path.length - 1].g <= Constants.MAX_MOVE) {
       const newState = {
         ...state,
-        player: { ...state.player, x: coords.x, y: coords.y }
+        player: { ...state.player, x: coords.x, y: coords.y}
       };
       const { paths, monsters } = moveMonsters(newState);
       const stateAfterMonsters = { ...newState, monsters };
