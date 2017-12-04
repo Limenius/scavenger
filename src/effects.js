@@ -61,8 +61,6 @@ const moveToPlayer = (monster, state) => {
   const path = findPath(monster, state.player, state.map);
   if (Constants.MONSTER_MAX_MOVE < path.length) {
     state.sound.play("bad");
-  } else {
-    state.sound.play("gameover");
   }
   const realPath = path.slice(0, Constants.MONSTER_MAX_MOVE);
   const lastNode = realPath[realPath.length - 1];

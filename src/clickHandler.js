@@ -72,7 +72,7 @@ export function click(coords) {
         })
         .then(() => {
           if (monstersKillPlayer(stateAfterMonsters)) {
-            stateAfterMonsters.sound.play("lvlup");
+            stateAfterMonsters.sound.play("gameover");
             return dispatch(killed());
           }
           const stateAfterGold = pickGold(stateAfterMonsters);
