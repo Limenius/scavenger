@@ -112,6 +112,6 @@ export default function initLevel(levelNumber) {
     dispatch(setCollected({gold: 0, chests: 0, spells: 0}));
     dispatch(setTotalChests(level.gold.length));
     dispatch(setTotalGold(level.gold.reduce((acc, curr) => acc + curr.value, 0)));
-    dispatch(setSidebarValues({gold: 0, chests: 0}));
+    dispatch(setSidebarValues({gold: 0, chests: 0, spells: 0}));
   };
 }

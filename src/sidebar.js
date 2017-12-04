@@ -43,7 +43,23 @@ export function setupSidebar() {
     textChest.y = 85;
     rectangle.addChild(textChest);
 
+    const spells = new PIXI.Sprite(state.textures.spell1);
+    spells.position.x = 1550;
+    spells.position.y = 110;
+    rectangle.addChild(spells);
+
+    const textSpells = new PIXI.Text("", {
+      fontFamily: "Pixilator",
+      fontSize: "30px",
+      fill: 0xeeeeee,
+      "text-align": "center"
+    });
+    textSpells.anchor.set(0.5, 0.5);
+    textSpells.x = 1700;
+    textSpells.y = 135;
+    rectangle.addChild(textSpells);
+
     state.sidebarContainer.addChild(rectangle);
-    dispatch(setSidebar({chests: textChest, gold: textGold}))
+    dispatch(setSidebar({chests: textChest, gold: textGold, spells: textSpells}))
   };
 }

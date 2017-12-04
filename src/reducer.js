@@ -290,16 +290,17 @@ export function enableUI() {
 export function setCollected({ gold, chests, spells }) {
   return (dispatch, state) => {
     dispatch({ type: SET_COLLECTED, gold, chests, spells });
-    dispatch(setSidebarValues({ gold, chests }));
+    dispatch(setSidebarValues({ gold, chests, spells }));
   };
 }
 
-export function setSidebarValues({ chests, gold }) {
+export function setSidebarValues({ chests, gold, spells }) {
   return (dispatch, state) => {
     const totalGold = state.totalGold;
     const totalChests = state.totalChests;
     state.sidebar.chests.text = `${chests}/${totalChests}`;
     state.sidebar.gold.text = `${gold}/${totalGold}`;
+    state.sidebar.spells.text = `${spells}`;
   };
 }
 
