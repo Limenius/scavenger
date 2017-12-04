@@ -19,6 +19,7 @@ import {
   setSidebarValues,
   setCollected,
   clearSmell,
+  clearVisible,
 } from "./reducer";
 
 const prepareMap = mapChar => {
@@ -113,6 +114,7 @@ export default function initLevel(levelNumber) {
     });
 
     wallTiles.forEach(tile => state.mapContainer.addChild(tile));
+    dispatch(clearVisible());
     dispatch(clearSmell());
     dispatch(setMonsters(monsters));
     dispatch(setSpells(spells));

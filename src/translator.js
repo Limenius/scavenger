@@ -6,12 +6,12 @@ import { transpose } from "./map";
 
 const SPEED = 4;
 
-export function createTranslatorPlayer(path, sprite, ticker, map, tiles, done) {
+export function createTranslatorPlayer(path, sprite, ticker, map, tiles, visited, done) {
   const trajectory = [
     { x: sprite.position.x / 50, y: (sprite.position.y + 20) / 50 },
     ...path
   ];
-  let it = runnerPlayer(sprite, trajectory, ticker, map, tiles);
+  let it = runnerPlayer(sprite, trajectory, ticker, map, tiles, visited);
   const step = function(delta) {
     if (it.next(delta).done) {
       ticker.remove(step);
@@ -38,7 +38,7 @@ export function createTranslator(path, sprite, ticker, visibility, done) {
 
 const gatherVisibility = tiles => tiles.map(row => row.map(tile => tile.alpha))
 
-function fovChanges(map, visibility, center) {
+function fovChanges(map, visibility, center, visited) {
   const grid = new Map(transformMapToGraph(map));
   compute(grid, [center.x, center.y], Constants.FOV_RADIUS);
   return grid.tiles.map((column, idxY) => {
@@ -47,7 +47,7 @@ function fovChanges(map, visibility, center) {
         x: idxX,
         y: idxY,
         from: visibility[idxX][idxY],
-        to: tile.visible ? 1 : 0
+        to: tile.visible ? 1 : (visited.find(({x, y}) => x === idxX && y === idxY) ? 0.5 : 0 )
       };
     });
   });
@@ -55,13 +55,13 @@ function fovChanges(map, visibility, center) {
 
 const getVisibilityFromChanges = changes => changes.map(row => row.map(change => change.to));
 
-function* runnerPlayer(sprite, trajectory, ticker, map, tiles) {
+function* runnerPlayer(sprite, trajectory, ticker, map, tiles, visited) {
   let visibility = gatherVisibility(tiles);
   const steps = trajectory.reduce((acc, curr, idx) => {
     if (idx === 0) {
       return [];
     }
-    const changes = fovChanges(map, visibility, trajectory[idx]);
+    const changes = fovChanges(map, visibility, trajectory[idx], visited);
     visibility = transpose(getVisibilityFromChanges(changes));
     acc.push(() =>
       runnerOneStepPlayer(

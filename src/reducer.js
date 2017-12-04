@@ -30,6 +30,8 @@ const SET_SCROLL = "SET_SCROLL";
 const DISABLE_UI = "DISABLE_UI";
 const ENABLE_UI = "ENABLE_UI";
 const CLEAR_SMELL = "CLEAR_SMELL";
+const ADD_VISIBLE = "ADD_VISIBLE";
+const CLEAR_VISIBLE = "CLEAR_VISIBLE";
 
 const initialState = {
   uiEnabled: true,
@@ -68,6 +70,16 @@ const reducer = (state = initialState, action) => {
       return action.state;
     case DISABLE_UI:
       return { ...state, uiEnabled: false };
+    case CLEAR_VISIBLE:
+      return { ...state, visible: [] };
+    case ADD_VISIBLE:
+      let diff = [];
+      action.visible.forEach(({x, y}) => {
+        if (!state.visible.find(({xv,yv}) => x === xv && y === yv)) {
+          diff.push({x, y});
+        }
+      })
+      return { ...state, visible: [...state.visible, ...diff] };
     case CLEAR_SMELL:
       return { ...state, smell: [] };
     case ENABLE_UI:
@@ -143,7 +155,6 @@ const reducer = (state = initialState, action) => {
         return { ...state, trajectory };
       }
     case COMPUTE_FOV:
-      renderFovImmediate(state, state.player);
       const smell = renderSmell(state, state.player);
       return { ...state, smell };
     default:
@@ -232,7 +243,17 @@ export function setState(state) {
 }
 
 export function computeFov(coords) {
-  return { type: COMPUTE_FOV, coords };
+  return (dispatch, state) => {
+    const visibility = renderFovImmediate(state, state.player);
+    const visible = [];
+    visibility.forEach((row, y) => row.forEach((tile, x) => {
+      if (tile.visible) {
+        visible.push({x, y});
+      }
+    }))
+    dispatch({ type: ADD_VISIBLE, visible });
+    dispatch({ type: COMPUTE_FOV, coords });
+  };
 }
 
 export function setTiles(tiles) {
@@ -297,6 +318,14 @@ export function disableUI() {
 
 export function enableUI() {
   return { type: ENABLE_UI };
+}
+
+export function clearVisible() {
+  return { type: CLEAR_VISIBLE };
+}
+
+export function addVisible(visible) {
+  return { type: ADD_VISIBLE, visible };
 }
 
 export function setCollected({ gold, chests, spells1, spells2 }) {

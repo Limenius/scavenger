@@ -129,7 +129,15 @@ function renderFovImmediate(state, center) {
   compute(grid, [center.x, center.y], Constants.FOV_RADIUS);
   grid.tiles.forEach((column, idxY) => {
     column.forEach((tile, idxX) => {
-      state.tiles[idxX][idxY].alpha = tile.visible ? 1: 0;
+      if (tile.visible) {
+        state.tiles[idxX][idxY].alpha = 1;
+      } else {
+        if (state.visible.find(({x, y}) => x === idxX && y === idxY)) {
+          state.tiles[idxX][idxY].alpha = 0.5;
+        } else {
+          state.tiles[idxX][idxY].alpha = 0;
+        }
+      }
       state.monsters.forEach(monster => {
         if (monster.y === idxX && monster.x === idxY) {
           monster.sprite.visible = tile.visible;
@@ -142,6 +150,7 @@ function renderFovImmediate(state, center) {
       });
     });
   });
+  return grid.tiles;
 }
 
 function renderSmell(state, center) {

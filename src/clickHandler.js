@@ -17,14 +17,14 @@ import {
   enableUI,
   disableUI,
   setCollected,
-  goNextLevel
+  goNextLevel,
+  addVisible
 } from "./reducer";
 import { compute, Map } from "./fov";
 import { transformMapToGraph } from "./map";
 
 function computeFov(map, center) {
   const grid = new Map(transformMapToGraph(map));
-  console.log(grid)
   compute(grid, [center.x, center.y], Constants.FOV_RADIUS);
   return grid.tiles.map((column, idxY) => {
     return column.map((tile, idxX) => {
@@ -70,6 +70,7 @@ export function click(coords) {
           state.app.ticker,
           state.map,
           state.tiles,
+          state.visible,
           resolve
         );
         state.app.ticker.add(animator);
@@ -88,7 +89,7 @@ export function click(coords) {
               });
             });
             Promise.all(animators).then(() => {
-              renderFovImmediate(newState, coords);
+              const visibility = renderFovImmediate(newState, coords);
               resolve();
             });
           });
@@ -109,7 +110,6 @@ export function click(coords) {
               spells2: stateAfterGold.collectedSpells2
             })
           );
-          renderFovImmediate(stateAfterGold, coords);
 
           const stateAfterSpells = pickSpells(stateAfterGold);
           // can do this one because it is only side effects.
@@ -121,9 +121,25 @@ export function click(coords) {
               spells2: stateAfterSpells.collectedSpells2
             })
           );
-          renderFovImmediate(stateAfterSpells, coords);
-          const smell = renderSmell(stateAfterSpells, coords);
-          const stateAfterSmell = {...stateAfterSpells, smell};
+
+          const visibility = renderFovImmediate(stateAfterGold, coords);
+          const visible = [];
+          visibility.forEach((row, y) => row.forEach((tile, x) => {
+              if (tile.visible) {
+                visible.push({ x, y });
+              }
+            }));
+
+          let diff = [];
+          visible.forEach(({ x, y }) => {
+            if (!stateAfterSpells.visible.find(({ xv, yv }) => x === xv && y === yv)) {
+              diff.push({ x, y });
+            }
+          });
+
+          const stateAfterVisited = {...stateAfterSpells, visible: [...stateAfterSpells.visible, ...visible]};
+          const smell = renderSmell(stateAfterVisited, coords);
+          const stateAfterSmell = {...stateAfterVisited, smell};
 
           const hasFinished = exitLevel(stateAfterSmell);
 
