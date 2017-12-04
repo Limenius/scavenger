@@ -1,6 +1,7 @@
 import {
   exitLevel,
   pickGold,
+  pickSpells,
   moveMonsters,
   renderSmell,
   renderFovImmediate
@@ -85,17 +86,32 @@ export function click(coords) {
           dispatch(
             setCollected({
               chests: stateAfterGold.collectedChests,
-              gold: stateAfterGold.collectedGold
+              gold: stateAfterGold.collectedGold,
+              spells1: stateAfterGold.collectedSpells1,
+              spells2: stateAfterGold.collectedSpells2
             })
           );
           renderFovImmediate(stateAfterGold, coords);
           const smell = renderSmell(stateAfterGold, coords);
-          const hasFinished = exitLevel(stateAfterGold);
+
+          const stateAfterSpells = pickSpells(stateAfterGold);
+          // can do this one because it is only side effects.
+          dispatch(
+            setCollected({
+              chests: stateAfterSpells.collectedChests,
+              gold: stateAfterSpells.collectedGold,
+              spells1: stateAfterSpells.collectedSpells1,
+              spells2: stateAfterSpells.collectedSpells2
+            })
+          );
+
+          const hasFinished = exitLevel(stateAfterSpells);
+
           dispatch(enableUI());
           if (hasFinished) {
             return dispatch(goNextLevel());
           } else {
-            return dispatch(setState({ ...stateAfterGold, smell }));
+            return dispatch(setState({ ...stateAfterSpells, smell }));
           }
         });
     } else {

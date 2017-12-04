@@ -43,6 +43,7 @@ Click when you are ready to start`,
     monsters: [],
     exit: { x: 16, y: 7, sprite: null },
     gold: [
+      { x: 12, y: 3, value: 1 },
       { x: 17, y: 9, value: 1 },
     ],
     spells: [

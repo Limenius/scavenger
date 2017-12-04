@@ -4,6 +4,7 @@ import {
   setTiles,
   setPlayer,
   setGold,
+  setSpells,
   setTotalChests,
   setTotalGold,
   setExits,
@@ -91,6 +92,7 @@ export default function initLevel(levelNumber) {
       state.mapContainer.addChild(item.sprite);
       monsters.push({...item})
     });
+    dispatch(setMonsters(monsters));
 
     let spells = [];
     level.spells.forEach(item => {
@@ -100,16 +102,16 @@ export default function initLevel(levelNumber) {
       state.mapContainer.addChild(item.sprite);
       spells.push({...item})
     });
+    dispatch(setSpells(spells));
 
-    dispatch(setMonsters(monsters));
     dispatch(setTextBlock(level.text));
     dispatch(setSmellRadius(0));
     dispatch(setLevel(levelNumber));
     dispatch(computeFov());
     dispatch(setKilled(false));
-    dispatch(setCollected({gold: 0, chests: 0}));
+    dispatch(setCollected({gold: 0, chests: 0, spells1: 0, spells2: 0}));
     dispatch(setTotalChests(level.gold.length));
     dispatch(setTotalGold(level.gold.reduce((acc, curr) => acc + curr.value, 0)));
-    dispatch(setSidebarValues({gold: 0, chests: 0}));
+    dispatch(setSidebarValues({gold: 0, chests: 0, spells1: 0, spells2: 0}));
   };
 }
