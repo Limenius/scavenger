@@ -29,6 +29,7 @@ const SET_COLLECTED = "SET_COLLECTED";
 const SET_SCROLL = "SET_SCROLL";
 const DISABLE_UI = "DISABLE_UI";
 const ENABLE_UI = "ENABLE_UI";
+const CLEAR_SMELL = "CLEAR_SMELL";
 
 const initialState = {
   uiEnabled: true,
@@ -67,6 +68,8 @@ const reducer = (state = initialState, action) => {
       return action.state;
     case DISABLE_UI:
       return { ...state, uiEnabled: false };
+    case CLEAR_SMELL:
+      return { ...state, smell: [] };
     case ENABLE_UI:
       return { ...state, uiEnabled: true };
     case SET_MAP:
@@ -205,6 +208,7 @@ export function goNextLevel() {
       level = 0;
     } else {
       dispatch(cleanMap());
+      dispatch(clearSmell());
       level = state.level + 1;
     }
     return dispatch(initLevel(level));
@@ -216,6 +220,9 @@ const cleanMap = () => (dispatch, state) => {
   state.monsters.forEach(({ sprite }) => state.mapContainer.removeChild(sprite));
   state.gold.forEach(({ sprite }) => state.mapContainer.removeChild(sprite));
   state.exits.forEach(({ sprite }) => state.mapContainer.removeChild(sprite));
+  state.smell.forEach(({ sprite }) => {
+    state.mapContainer.removeChild(sprite)
+  });
   state.tiles.forEach((row) => row.forEach((sprite) => sprite.visible = false));
 };
 
@@ -254,6 +261,10 @@ export function setExits(exits) {
 
 export function setMap(map) {
   return { type: SET_MAP, map };
+}
+
+export function clearSmell() {
+  return { type: CLEAR_SMELL };
 }
 
 export function setTotalGold(totalGold) {

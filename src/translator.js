@@ -21,12 +21,12 @@ export function createTranslatorPlayer(path, sprite, ticker, map, tiles, done) {
   return step;
 }
 
-export function createTranslator(path, sprite, ticker, done) {
+export function createTranslator(path, sprite, ticker, visibility, done) {
   const trajectory = [
     { x: sprite.position.x / 50, y: sprite.position.y / 50 },
     ...path
   ];
-  let it = runner(sprite, trajectory, ticker);
+  let it = runner(sprite, trajectory, visibility, ticker);
   const step = function(delta) {
     if (it.next(delta).done) {
       ticker.remove(step);
@@ -79,7 +79,7 @@ function* runnerPlayer(sprite, trajectory, ticker, map, tiles) {
   }
 }
 
-function* runner(sprite, trajectory, ticker) {
+function* runner(sprite, trajectory, visibility, ticker) {
   const steps = trajectory.reduce((acc, curr, idx) => {
     if (idx === 0) {
       return [];
@@ -88,7 +88,8 @@ function* runner(sprite, trajectory, ticker) {
       runnerOneStep(
         sprite,
         { x: trajectory[idx - 1].x * 50, y: trajectory[idx - 1].y * 50 - 20},
-        { x: curr.x * 50, y: curr.y * 50 - 20 }
+        { x: curr.x * 50, y: curr.y * 50 - 20 },
+        visibility[curr.x][curr.y]
       )
     );
     return acc;
@@ -98,11 +99,12 @@ function* runner(sprite, trajectory, ticker) {
   }
 }
 
-function* runnerOneStep(sprite, start, end) {
+function* runnerOneStep(sprite, start, end, visible) {
   let done = false;
   let delta;
   while (!done) {
     delta = yield;
+    sprite.visible = visible;
     if (sprite.position.x > end.x) {
       sprite.position.x -= delta * SPEED;
     } else if (sprite.position.x < end.x) {
