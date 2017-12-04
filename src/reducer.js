@@ -314,7 +314,7 @@ export function setTextBlock(text) {
     "text-align": "center"
   });
   sprite.anchor.set(0.5, 0.5);
-  sprite.x = 850;
+  sprite.x = 700;
   sprite.y = 350;
   var rectangle = new PIXI.Graphics();
 
@@ -324,7 +324,7 @@ export function setTextBlock(text) {
   rectangle.lineStyle(2, 0xffffff);
 
   // draw a rectangle
-  rectangle.drawRect(550, 100, 600, 600);
+  rectangle.drawRect(400, 100, 600, 600);
   rectangle.addChild(sprite);
   return { type: SET_TEXT_BLOCK, rectangle: rectangle };
 }

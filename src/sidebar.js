@@ -9,10 +9,10 @@ export function setupSidebar() {
 
     rectangle.beginFill(0x0000000);
     rectangle.lineStyle(2, 0xffffff);
-    rectangle.drawRect(1500, 0, 300, 1800);
+    rectangle.drawRect(1200, 0, 300, 1500);
 
     const gold = new PIXI.Sprite(state.textures.gold);
-    gold.position.x = 1550;
+    gold.position.x = 1250;
     gold.position.y = 10;
     rectangle.addChild(gold);
 
@@ -23,12 +23,12 @@ export function setupSidebar() {
       "text-align": "center"
     });
     textGold.anchor.set(0.5, 0.5);
-    textGold.x = 1700;
+    textGold.x = 1400;
     textGold.y = 35;
     rectangle.addChild(textGold);
 
     const chest = new PIXI.Sprite(state.textures.chest);
-    chest.position.x = 1550;
+    chest.position.x = 1250;
     chest.position.y = 60;
     rectangle.addChild(chest);
 
@@ -39,12 +39,12 @@ export function setupSidebar() {
       "text-align": "center"
     });
     textChest.anchor.set(0.5, 0.5);
-    textChest.x = 1700;
+    textChest.x = 1400;
     textChest.y = 85;
     rectangle.addChild(textChest);
 
     const spells1 = new PIXI.Sprite(state.textures.spell1);
-    spells1.position.x = 1550;
+    spells1.position.x = 1250;
     spells1.position.y = 110;
     rectangle.addChild(spells1);
 
@@ -55,12 +55,12 @@ export function setupSidebar() {
       "text-align": "center"
     });
     textSpells1.anchor.set(0.5, 0.5);
-    textSpells1.x = 1700;
+    textSpells1.x = 1400;
     textSpells1.y = 135;
     rectangle.addChild(textSpells1);
 
     const spells2 = new PIXI.Sprite(state.textures.spell2);
-    spells2.position.x = 1550;
+    spells2.position.x = 1250;
     spells2.position.y = 160;
     rectangle.addChild(spells2);
 
@@ -71,7 +71,7 @@ export function setupSidebar() {
       "text-align": "center"
     });
     textSpells2.anchor.set(0.5, 0.5);
-    textSpells2.x = 1700;
+    textSpells2.x = 1400;
     textSpells2.y = 185;
     rectangle.addChild(textSpells2);
 
