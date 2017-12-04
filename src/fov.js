@@ -247,7 +247,6 @@ function compute(map, position, vision_range) {
         }
     }
   }
-  console.log(map);
 }
 
 if (exports !== undefined) {
