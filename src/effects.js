@@ -148,6 +148,16 @@ function renderFovImmediate(state, center) {
           gold.sprite.visible = tile.visible;
         }
       });
+      state.spells.forEach(spell => {
+        if (spell.y === idxX && spell.x === idxY) {
+          spell.sprite.visible = tile.visible;
+        }
+      });
+      state.exits.forEach(exit => {
+        if (exit.y === idxX && exit.x === idxY) {
+          exit.sprite.visible = tile.visible;
+        }
+      });
     });
   });
   return grid.tiles;

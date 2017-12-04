@@ -6,12 +6,35 @@ import { transpose } from "./map";
 
 const SPEED = 4;
 
-export function createTranslatorPlayer(path, sprite, ticker, map, tiles, visited, done) {
+export function createTranslatorPlayer(
+  path,
+  sprite,
+  ticker,
+  map,
+  tiles,
+  visited,
+  gold,
+  monsters,
+  spells,
+  exits,
+  done
+) {
   const trajectory = [
     { x: sprite.position.x / 50, y: (sprite.position.y + 20) / 50 },
     ...path
   ];
-  let it = runnerPlayer(sprite, trajectory, ticker, map, tiles, visited);
+  let it = runnerPlayer(
+    sprite,
+    trajectory,
+    ticker,
+    map,
+    tiles,
+    visited,
+    gold,
+    monsters,
+    spells,
+    exits
+  );
   const step = function(delta) {
     if (it.next(delta).done) {
       ticker.remove(step);
@@ -36,7 +59,7 @@ export function createTranslator(path, sprite, ticker, visibility, done) {
   return step;
 }
 
-const gatherVisibility = tiles => tiles.map(row => row.map(tile => tile.alpha))
+const gatherVisibility = tiles => tiles.map(row => row.map(tile => tile.alpha));
 
 function fovChanges(map, visibility, center, visited) {
   const grid = new Map(transformMapToGraph(map));
@@ -47,15 +70,31 @@ function fovChanges(map, visibility, center, visited) {
         x: idxX,
         y: idxY,
         from: visibility[idxX][idxY],
-        to: tile.visible ? 1 : (visited.find(({x, y}) => x === idxX && y === idxY) ? 0.5 : 0 )
+        to: tile.visible
+          ? 1
+          : visited.find(({ x, y }) => x === idxX && y === idxY) ? 0.5 : 0
       };
     });
   });
 }
 
-const getVisibilityFromChanges = changes => changes.map(row => row.map(change => change.to));
+const getVisibilityFromChanges = changes =>
+  changes.map(row => row.map(change => change.to));
 
-function* runnerPlayer(sprite, trajectory, ticker, map, tiles, visited) {
+function* runnerPlayer(
+  sprite,
+  trajectory,
+  ticker,
+  map,
+  tiles,
+  visited,
+  gold,
+  monsters,
+  spells,
+  exits
+) {
+
+  const items = [...gold, ...monsters, ...spells, ...exits];
   let visibility = gatherVisibility(tiles);
   const steps = trajectory.reduce((acc, curr, idx) => {
     if (idx === 0) {
@@ -66,10 +105,14 @@ function* runnerPlayer(sprite, trajectory, ticker, map, tiles, visited) {
     acc.push(() =>
       runnerOneStepPlayer(
         sprite,
-        { x: trajectory[idx - 1].x * 50, y: trajectory[idx - 1].y * 50 - 20},
-        { x: curr.x * 50, y: curr.y * 50 - 20},
-        flatten(changes).filter(({from, to}) => from !== to),
+        {
+          x: trajectory[idx - 1].x * 50,
+          y: trajectory[idx - 1].y * 50 - 20
+        },
+        { x: curr.x * 50, y: curr.y * 50 - 20 },
+        flatten(changes).filter(({ from, to }) => from !== to),
         tiles,
+        makeVisibilizer( transpose(getVisibilityFromChanges(changes)) , items)
       )
     );
     return acc;
@@ -77,6 +120,16 @@ function* runnerPlayer(sprite, trajectory, ticker, map, tiles, visited) {
   for (let i = 0; i <= steps.length - 1; i++) {
     yield* steps[i]();
   }
+}
+
+function makeVisibilizer(visibility, items) {
+  const vis = visibility;
+  const it = items;
+  return function() {
+    items.forEach(item => {
+      item.sprite.visible = visibility[item.y][item.x] === 1;
+    });
+  };
 }
 
 function* runner(sprite, trajectory, visibility, ticker) {
@@ -87,7 +140,7 @@ function* runner(sprite, trajectory, visibility, ticker) {
     acc.push(() =>
       runnerOneStep(
         sprite,
-        { x: trajectory[idx - 1].x * 50, y: trajectory[idx - 1].y * 50 - 20},
+        { x: trajectory[idx - 1].x * 50, y: trajectory[idx - 1].y * 50 - 20 },
         { x: curr.x * 50, y: curr.y * 50 - 20 },
         visibility[curr.x][curr.y]
       )
@@ -127,7 +180,7 @@ function* runnerOneStep(sprite, start, end, visible) {
   }
 }
 
-function* runnerOneStepPlayer(sprite, start, end, changesFov, tiles) {
+function* runnerOneStepPlayer(sprite, start, end, changesFov, tiles, callback) {
   let done = false;
   let delta;
   let total = 0;
@@ -136,19 +189,18 @@ function* runnerOneStepPlayer(sprite, start, end, changesFov, tiles) {
   while (!done) {
     delta = yield;
     total += delta;
-    
+
     sprite.play();
 
     sprite.position.x = total / endTime * (end.x - start.x) + start.x;
     sprite.position.y = total / endTime * (end.y - start.y) + start.y;
-    changesFov.forEach(
-      change =>
-        {
-          tiles[change.x][change.y].alpha = (total / endTime) * (change.to - change.from) + change.from
-        }
-    );
+    changesFov.forEach(change => {
+      tiles[change.x][change.y].alpha =
+        total / endTime * (change.to - change.from) + change.from;
+    });
     if (total >= endTime) {
       sprite.gotoAndStop(4);
+      callback();
       done = true;
     }
   }

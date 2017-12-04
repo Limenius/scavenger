@@ -71,6 +71,10 @@ export function click(coords) {
           state.map,
           state.tiles,
           state.visible,
+          state.gold,
+          state.monsters,
+          state.spells,
+          state.exits,
           resolve
         );
         state.app.ticker.add(animator);
