@@ -76,7 +76,7 @@ export default function initLevel(levelNumber) {
 
     let gold = [];
     level.gold.forEach(item => {
-      item.sprite = new PIXI.Sprite(state.textures.gold);
+      item.sprite = new PIXI.Sprite(state.textures.chest);
       item.sprite.position.x = item.x * 50;
       item.sprite.position.y = item.y * 50;
       state.mapContainer.addChild(item.sprite);
