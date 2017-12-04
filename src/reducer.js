@@ -302,7 +302,7 @@ export function setTextBlock(text) {
     "text-align": "center"
   });
   sprite.anchor.set(0.5, 0.5);
-  sprite.x = 800;
+  sprite.x = 850;
   sprite.y = 350;
   var rectangle = new PIXI.Graphics();
 
