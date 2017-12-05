@@ -5,6 +5,7 @@ import {
   moveMonsters,
   renderSmell,
   inSmell,
+  removeSmell,
   renderFovImmediate
 } from "./effects";
 import { createTranslator, createTranslatorPlayer } from "./translator";
@@ -65,6 +66,7 @@ export function click(coords) {
 
       new Promise(resolve => {
         dispatch(disableUI());
+        dispatch(removeSmell());
         const animator = createTranslatorPlayer(
           path,
           state.player.sprite,

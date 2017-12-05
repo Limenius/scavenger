@@ -4,8 +4,12 @@ import { flatten } from "./util";
 import * as PIXI from "pixi.js";
 import Constants from "./constants";
 
+export function removeSmell() {
+  return (dispatch, state) => state.smell.forEach(smell => state.mapContainer.removeChild(smell.sprite))
+}
+
 const exitLevel = state => {
-  const { player, exits, totalGold } = state;
+  const { player, exits } = state;
   let hasFinished = false;
   exits.forEach(exit => {
     if (player.x === exit.x && player.y === exit.y) {
