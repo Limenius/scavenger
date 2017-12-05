@@ -56,7 +56,7 @@ export default class Sound {
         coins: new Howl({
           src: ["./sounds/coins.wav"],
           loop: false,
-          volume: 1,
+          volume: 0.7,
           onload: function() {
             resolve();
           }
