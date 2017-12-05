@@ -30,7 +30,7 @@ const levels = [
 **********************
 `,
     text: `Level 0.
-When exploring pyramids, it is important to learn
+When exploring pyramids, it is important to
 learn how to exit them.
 
 Collect the treasure and exit the pyramid.
@@ -500,7 +500,7 @@ You are now an experienced adventurer.
 Let's go for a real quest.
 
 4 tresure chests.
-Total gold in them: 4.
+Total gold in them: 9.
 Click when you are ready to start`,
     player: { x: 20, y: 2 },
     monsters: [{ x: 21, y: 10 }, { x: 10, y: 9 }, { x: 5, y: 6 }, { x: 10, y: 15 }],
@@ -508,7 +508,7 @@ Click when you are ready to start`,
       { x: 1, y: 19, sprite: null },
     ],
     gold: [
-      { x: 20, y: 3, value: 3 },
+      { x: 20, y: 3, value: 2 },
       { x: 1, y: 21, value: 5 },
       { x: 10, y: 4, value: 1 },
       { x: 19, y: 22, value: 1 },
