@@ -285,7 +285,7 @@ Click when you are ready to start`,
     text: `Level 5.
 Real pyramids are big and full
 of monsters. Sometimes they have
-more that one exit.
+more than one exit too.
 
 2 tresure chests.
 Total gold in them: 3.
