@@ -508,6 +508,7 @@ Click when you are ready to start`,
       { x: 1, y: 19, sprite: null },
     ],
     gold: [
+      { x: 20, y: 3, value: 3 },
       { x: 1, y: 21, value: 5 },
       { x: 10, y: 4, value: 1 },
       { x: 19, y: 22, value: 1 },
