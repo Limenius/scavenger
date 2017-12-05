@@ -138,8 +138,8 @@ Carrying very precious treasures is risky.
 
 Collect the treasure and exit carefully.
 
-1 tresure chests.
-Total gold in them: 3.
+1 tresure chest.
+Total gold in it: 3.
 
 Click when you are ready to start`,
     player: { x: 9, y: 2 },
@@ -187,7 +187,7 @@ Monsters can smell you through walls.
 Do not trust walls.
 
 1 tresure chests.
-Total gold in them: 3.
+Total gold in it: 3.
 
 Click when you are ready to start`,
     player: { x: 15, y: 3 },
@@ -445,8 +445,8 @@ Pyramids can be disorienting.
 Be wise and explore them before
 making any bold decisions.
 
-3 tresure chests.
-Total gold in them: 4.
+2 tresure chests.
+Total gold in them: 3.
 Click when you are ready to start`,
     player: { x: 10, y: 4 },
     monsters: [{ x: 3, y: 5 }, { x: 21, y: 9 }],
@@ -499,8 +499,8 @@ Click when you are ready to start`,
 You are now an experienced adventurer.
 Let's go for a real quest.
 
-5 tresure chests.
-Total gold in them: 5.
+4 tresure chests.
+Total gold in them: 4.
 Click when you are ready to start`,
     player: { x: 20, y: 2 },
     monsters: [{ x: 21, y: 10 }, { x: 10, y: 9 }, { x: 5, y: 6 }, { x: 10, y: 15 }],
