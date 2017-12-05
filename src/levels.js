@@ -460,7 +460,7 @@ Click when you are ready to start`,
     ],
     spells: [
       { x: 20, y: 3, type: 1 },
-      { x: 2, y: 25, type: 2 },
+      { x: 2, y: 24, type: 2 },
     ]
   },
   {
