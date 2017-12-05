@@ -5,6 +5,15 @@ export default class Sound {
   load() {
     return new Promise((resolve, reject) => {
       this.sounds = {
+        music: new Howl({
+          src: ["./sounds/scavenger.mp3"],
+          autoplay: true,
+          loop: true,
+          volume: 0.5,
+          onload: function() {
+            resolve();
+          }
+        }),
         blub: new Howl({
           src: ["./sounds/blub.wav"],
           loop: false,
